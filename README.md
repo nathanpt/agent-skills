@@ -16,18 +16,24 @@ It is designed to prevent common failure modes:
 - edits inside generator-owned context sections;
 - wasteful subagent fan-out that re-derives known context.
 
+### `simplify`
+
+Reviews recent code changes for reuse, quality, and efficiency, then applies only evidence-backed cleanup. It distinguishes static review from runtime verification and scales parallel reviewer fan-out to the size and risk of the diff.
+
 ## Install for OMP
 
 ```bash
 git clone https://github.com/nathanpt/agent-skills.git
 mkdir -p ~/.omp/agent/skills
 cp -R agent-skills/skills/harness-bootstrap ~/.omp/agent/skills/
+cp -R agent-skills/skills/simplify ~/.omp/agent/skills/
 ```
 
 Invoke it explicitly:
 
 ```text
 /skill:harness-bootstrap
+/skill:simplify
 ```
 
 ## Repository layout
@@ -35,6 +41,10 @@ Invoke it explicitly:
 ```text
 skills/
   harness-bootstrap/
+    SKILL.md
+    references/
+      source-index.md
+  simplify/
     SKILL.md
     references/
       source-index.md
