@@ -22,10 +22,10 @@
 - **Local copy:** `ronnie-debug-skill.md`
 - **Relevant principles:** remain in diagnosis mode when evidence is weak; produce two or three bounded hypotheses; show the likely failure path; create a narrow failing reproduction; require a stopping condition to prevent endless speculative fixes; explain the issue clearly to the developer.
 
-## Existing local foundation
+## General debugging foundation
 
-- **Systematic debugging skill:** `~/.hermes/skills/software-development/systematic-debugging/SKILL.md`
-- **Role:** general root-cause and no-fix-before-investigation procedure. The new skill should specialize in evidence collection and runtime instrumentation rather than duplicate it.
+- **Reference:** the general root-cause and no-fix-before-investigation principles already used in Hermes, without treating that separate skill as a dependency.
+- **Role:** ensure this OMP/Pi skill includes its own evidence-first rules.
 
 ## Candidate name
 

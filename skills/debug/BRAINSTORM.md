@@ -14,16 +14,13 @@ observe → map system → form bounded hypotheses → instrument or select diag
 
 The skill is not primarily a better fix generator. It is an investigation protocol that makes unsupported certainty harder.
 
-## Relationship to existing Hermes skills
+## Relationship to other debugging guidance
 
-`systematic-debugging` is an existing Hermes skill that provides the general root-cause discipline and four phases. This skill should be a specialized evidence-first mode for bugs that are ambiguous, runtime-dependent, intermittent, cross-component, or resistant to ordinary debugging.
+The skill must be fully standalone because it is intended for the OMP/Pi `agent-skills` repository. It should include the necessary no-fix-before-evidence rules directly rather than depend on `systematic-debugging`, which is a separate Hermes-local skill unavailable to OMP/Pi.
 
-- Use `systematic-debugging` for the broad no-fix-before-root-cause process.
-- Use `debug` when the missing ingredient is runtime evidence, instrumentation, or a structured investigation record.
-- Combine with `test-driven-development` when a failing regression test can be created before the fix.
-- Use `python-debugpy` or other domain-specific Hermes skills when the runtime requires them.
+The design may be informed by general systematic-debugging principles, but the final skill must not require, invoke, or reference that Hermes-local skill as a prerequisite.
 
-Avoid duplicating every general debugging rule in the final skill. The new skill should add the evidence-collection machinery and explicit stopping behavior.
+The new skill should specialize in evidence collection, runtime instrumentation, and explicit stopping behavior rather than assume another skill supplies those rules.
 
 ## Candidate invocation
 
@@ -46,6 +43,12 @@ Before editing production code, the agent should:
 7. Give each hypothesis the evidence that would confirm or falsify it.
 
 If there is insufficient evidence to justify a reproduction path, remain in diagnosis mode. Do not write a speculative fix.
+
+## Investigation and modification boundary
+
+Diagnostic instrumentation is permitted before root-cause evidence exists when it is the smallest useful way to distinguish hypotheses. It must be clearly marked, minimally scoped, secret-safe, and removed after verification.
+
+Application fixes are prohibited until runtime evidence or a reliable failing reproduction supports the root-cause assessment. Instrumentation is not a fix and must never be presented as one.
 
 ## Evidence collection
 
