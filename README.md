@@ -24,6 +24,10 @@ Reviews recent code changes for reuse, quality, and efficiency, then applies onl
 
 Investigates ambiguous bugs with bounded hypotheses, runtime evidence, targeted diagnostic instrumentation, durable reproduction, and explicit stopping rules before application fixes.
 
+### `handoff`
+
+Transfers active work to a fresh agent with verified context, preserved decisions, explicit side-effect gates, and a safe first action.
+
 ### `project-foundation`
 
 Scaffolds a new or early-stage project with a concise `AGENTS.md`, progressive-disclosure documentation, optional machine-readable feature state, execution plans, and MADR decision records.
@@ -37,6 +41,7 @@ cp -R agent-skills/skills/harness-bootstrap ~/.omp/agent/skills/
 cp -R agent-skills/skills/simplify ~/.omp/agent/skills/
 cp -R agent-skills/skills/project-foundation ~/.omp/agent/skills/
 cp -R agent-skills/skills/debug ~/.omp/agent/skills/
+cp -R agent-skills/skills/handoff ~/.omp/agent/skills/
 ```
 
 Invoke it explicitly:
@@ -46,6 +51,7 @@ Invoke it explicitly:
 /skill:simplify
 /skill:project-foundation
 /skill:debug
+/skill:handoff
 ```
 
 ## Repository layout
@@ -83,6 +89,15 @@ skills/
       cursor-debug-mode.md
       doraemonkeys-debug-mode.md
       ronnie-debug-skill.md
+  handoff/
+    SKILL.md
+    BRAINSTORM.md
+    references/
+      source-index.md
+      usage.md
+      mattpocock-handoff-explained.md
+      mattpocock-skills-repository.md
+      softaworks-session-handoff.md
 ```
 
 ## Reference policy
