@@ -20,6 +20,10 @@ It is designed to prevent common failure modes:
 
 Reviews recent code changes for reuse, quality, and efficiency, then applies only evidence-backed cleanup. It distinguishes static review from runtime verification and scales parallel reviewer fan-out to the size and risk of the diff.
 
+### `project-foundation`
+
+Scaffolds a new or early-stage project with a concise `AGENTS.md`, progressive-disclosure documentation, optional machine-readable feature state, execution plans, and MADR decision records.
+
 ## Install for OMP
 
 ```bash
@@ -27,6 +31,7 @@ git clone https://github.com/nathanpt/agent-skills.git
 mkdir -p ~/.omp/agent/skills
 cp -R agent-skills/skills/harness-bootstrap ~/.omp/agent/skills/
 cp -R agent-skills/skills/simplify ~/.omp/agent/skills/
+cp -R agent-skills/skills/project-foundation ~/.omp/agent/skills/
 ```
 
 Invoke it explicitly:
@@ -34,6 +39,7 @@ Invoke it explicitly:
 ```text
 /skill:harness-bootstrap
 /skill:simplify
+/skill:project-foundation
 ```
 
 ## Repository layout
@@ -48,6 +54,17 @@ skills/
     SKILL.md
     references/
       source-index.md
+  project-foundation/
+    SKILL.md
+    BRAINSTORM.md
+    references/
+      source-index.md
+      openai-harness-engineering.md
+      anthropic-long-running-agents.md
+      walkinglabs-split-instructions.md
+      walkinglabs-feature-lists.md
+      walkinglabs-e2e-verification.md
+      madr.md
 ```
 
 ## Reference policy
