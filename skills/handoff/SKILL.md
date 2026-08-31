@@ -67,19 +67,23 @@ Write down:
 
 ### 2. Capture current state
 
-Inspect the available repository and runtime state. For Git projects, capture where applicable:
+Inspect the available repository and runtime state. For Git projects, capture:
 
 ```text
+state as of: timestamp
 project path
+handoff id and predecessor path/hash, if any
 branch
 HEAD SHA
 git status
 git worktree list
-recent commits
+changed-file inventory
 relevant PRs or issues
 ```
 
-Also capture the exact commands run, important results, active files, blockers, and verification status. If a fact was not checked, mark it `unverified` or `assumption`.
+A new hop must create a fresh anchor after its own work. Preserve the predecessor’s identity, but do not inherit its path, branch, SHA, file count, or completion claims as current. The receiver compares the recorded anchor with the live workspace before acting.
+
+Record commands as compact receipts (`command → exit/result`) and point to saved artifacts for long output. Do not paste full logs when a short verified claim and a re-checkable path are sufficient. If a fact was not checked, mark it `unverified` or `assumption`.
 
 ### 3. Enumerate the work
 
@@ -97,7 +101,19 @@ Preserve:
 
 Do not flatten a design discussion into conclusions only. Re-scan for exceptions signaled by words such as “unless,” “except,” “only if,” and “but.”
 
-### 4. Write the handoff
+### 4. Gate operational claims
+
+Any claim that directs the receiver to use a command, model, provider, route, service, port, permission, or integration is an operational claim. Tag each load-bearing claim:
+
+```text
+[verified: command/source + result + date]
+[unverified: what still needs checking]
+[assumption: why it is believed]
+```
+
+Before making an unverified operational claim the receiver’s immediate path, verify it against the live system or authoritative source. If it cannot be verified safely, label it and make the next action a verification step—not a confident instruction. Do not turn a recommendation into evidence.
+
+### 5. Write the handoff
 
 Write one Markdown file to the OS temporary directory by default. Use a timestamp plus a purpose slug. Use a project-local or user-selected path only when durability or shared access is explicitly needed.
 
@@ -129,7 +145,7 @@ Use this structure:
 
 Keep it compact. Point to existing artifacts rather than duplicating their contents. Do not refer to an inaccessible conversation as the source of required information.
 
-### 5. Self-audit and report
+### 6. Self-audit and report
 
 Before finalizing, ask:
 
@@ -153,10 +169,14 @@ Check:
 
 - project path, branch, worktree, and current HEAD;
 - current working-tree changes and conflicts;
+- recorded state timestamp, handoff id, predecessor link/hash, and changed-file inventory;
 - referenced files, plans, ADRs, issues, and URLs;
 - environment and runtime assumptions;
 - every `unverified` or `assumption` claim that affects the next action;
+- every operational claim needed for the immediate path;
 - whether blockers or approvals have changed.
+
+For a chain, treat every predecessor as historical input. Reconcile it against the newest handoff and live workspace, then create a fresh state anchor before making new claims.
 
 If the handoff is stale or conflicts with the repository, stop and report the conflict before modifying files.
 

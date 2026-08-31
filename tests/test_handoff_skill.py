@@ -35,6 +35,10 @@ class HandoffSkillStructureTests(unittest.TestCase):
             "Immediate next action",
             "credentials",
             "stale",
+            "state as of",
+            "predecessor link/hash",
+            "operational claim",
+            "verified: command/source + result + date",
         )
         for phrase in required:
             with self.subTest(phrase=phrase):
