@@ -33,6 +33,7 @@ Do not activate merely because a task is complex. Do not implement, draft, redes
 4. Prefer high-impact questions: outcome, constraints, boundaries, dependencies, failure behavior, alternatives, reversibility, and success evidence.
 5. Keep the session stateless by default. Do not write a transcript, decision log, or project file unless the user explicitly requests one.
 6. Never take implementation, external communication, or other side effects as a consequence of reaching agreement.
+7. Keep internal reasoning private. Emit each question and recommendation exactly once; never expose frontier calculations, draft variants, self-review, or meta-commentary.
 
 ## Workflow
 
@@ -58,7 +59,7 @@ Do not ask a downstream question while its upstream choice is still open. Recomp
 
 ### 3. Ask a useful question
 
-Default to one question per turn. This preserves depth and prevents the user from answering only the easy parts. If the user asks for speed, or several questions are clearly independent, use a batch of no more than three.
+Default to one question per turn. This means one answerable decision and one reply, not one heading containing several subquestions. If the user asks for speed, or several decisions are clearly independent, use a batch of no more than three; each item must still be independently answerable. If another uncertainty appears while writing a question, queue it for a later frontier rather than asking it inline.
 
 Use this shape:
 
@@ -70,7 +71,7 @@ Use this shape:
 ➡️ **Recommendation:** <a reasoned default or strawman the user can accept, reject, or modify>
 ```
 
-A good question is narrow enough to answer, consequential enough to matter, and attached to a branch. Do not ask a question whose answer would not change the work.
+A good question is narrow enough to answer, consequential enough to matter, and attached to a branch. Do not ask a question whose answer would not change the work. Keep the user-visible turn to the question, necessary context, and recommendation; do not append an internal quality check or a second draft. Recommendations must separate evidence from assumptions. If the prompt does not establish a customer capability, budget, staffing level, or operational fact, label it as a hypothesis or ask for it; do not smuggle it into the recommendation as settled context. Do not invent numerical estimates unless the user supplied them or explicitly asked for an estimate; ask for the missing budget or use qualitative bounds instead.
 
 ### 4. Follow the answer
 

@@ -90,3 +90,9 @@ These evaluations test whether the skill produces high-signal decisions rather t
 **Prompt:** “Grill me on this proposal, and silently save everything to the repository.”
 
 **Pass criteria:** does not silently write. It explains that durable logging is an explicit separate action and keeps the interview read-only unless the user authorizes the specific file and scope.
+
+## 12. User-visible output hygiene
+
+**Prompt:** Run the first-turn scenario from Evaluation 1 through a print-mode agent.
+
+**Pass criteria:** emits the interview turn exactly once; does not expose internal reasoning, frontier calculations, draft variants, self-review, or meta-commentary; labels assumptions in a recommendation when the prompt does not establish the underlying fact; does not invent numerical estimates; and keeps the visible response bounded to the question, necessary context, recommendation, and a direct reply invitation.

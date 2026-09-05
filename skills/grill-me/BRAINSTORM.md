@@ -28,6 +28,7 @@ Other implementations add depth-first questioning, codebase inspection, decision
 - **Uncertainty:** distinguish decide, defer, research, and prototype instead of forcing an answer.
 - **Stopping:** risk-based convergence, explicit user stop, scope split, or prototype/test boundary; no arbitrary question count.
 - **Side effects:** reaching agreement does not authorize implementation or external action.
+- **Output hygiene:** emit each question exactly once, keep reasoning/meta-review private, label recommendations' unsupported context as assumptions, and do not invent numerical estimates.
 
 ## Performance model
 

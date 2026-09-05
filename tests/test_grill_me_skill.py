@@ -34,6 +34,9 @@ class GrillMeSkillStructureTests(unittest.TestCase):
             "Do not use an arbitrary question count",
             "stateless by default",
             "Do not activate merely because a task is complex",
+            "Keep internal reasoning private",
+            "separate evidence from assumptions",
+            "Do not invent numerical estimates",
         )
         for phrase in required:
             with self.subTest(phrase=phrase):
