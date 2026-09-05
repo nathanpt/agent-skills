@@ -28,6 +28,10 @@ Investigates ambiguous bugs with bounded hypotheses, runtime evidence, targeted 
 
 Transfers active work to a fresh agent with verified context, preserved decisions, explicit side-effect gates, and a safe first action.
 
+### `grill-me`
+
+Pressure-tests plans, designs, and decisions through a focused, user-owned interview with dependency-aware questions and explicit stopping rules.
+
 ### `project-foundation`
 
 Scaffolds a new or early-stage project with a concise `AGENTS.md`, progressive-disclosure documentation, optional machine-readable feature state, execution plans, and MADR decision records.
@@ -42,6 +46,7 @@ cp -R agent-skills/skills/simplify ~/.omp/agent/skills/
 cp -R agent-skills/skills/project-foundation ~/.omp/agent/skills/
 cp -R agent-skills/skills/debug ~/.omp/agent/skills/
 cp -R agent-skills/skills/handoff ~/.omp/agent/skills/
+cp -R agent-skills/skills/grill-me ~/.omp/agent/skills/
 ```
 
 Invoke it explicitly:
@@ -52,6 +57,7 @@ Invoke it explicitly:
 /skill:project-foundation
 /skill:debug
 /skill:handoff
+/skill:grill-me
 ```
 
 ## Repository layout
@@ -98,6 +104,12 @@ skills/
       mattpocock-handoff-explained.md
       mattpocock-skills-repository.md
       softaworks-session-handoff.md
+  grill-me/
+    SKILL.md
+    BRAINSTORM.md
+    evaluations.md
+    references/
+      source-index.md
 ```
 
 ## Reference policy
