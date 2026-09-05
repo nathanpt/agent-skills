@@ -34,6 +34,25 @@ Do not activate merely because a task is complex. Do not implement, draft, redes
 5. Keep the session stateless by default. Do not write a transcript, decision log, or project file unless the user explicitly requests one.
 6. Never take implementation, external communication, or other side effects as a consequence of reaching agreement.
 7. Keep internal reasoning private. Emit each question and recommendation exactly once; never expose frontier calculations, draft variants, self-review, or meta-commentary.
+8. Maintain a compact internal ledger using `stated`, `verified`, `assumption`, `unknown`, `preference`, and `decision`; never silently promote one category into another.
+9. When multiple options remain genuinely viable, compare them against the same user-owned criteria and steelman the leading alternative before convergence. In a first-turn comparison, use only the two or three decisive contrasts; do not produce a table, mini design, or implementation recipe unless the user asks.
+
+### User-selected question mode
+
+Default to open-ended questions unless the user requests another mode. If the user asks for “choice mode,” “multiple choice,” “options,” or an equivalent format:
+
+- use choice mode for subsequent questions until the user changes the preference;
+- present one decision with 2–4 concrete options;
+- keep the option list compact: one short label and consequence per option; defer downstream branch analysis until after the answer;
+- include `Other`, `None of these`, or `I don't know` when the options are agent-generated;
+- do not pretend the options are exhaustive or invent false precision;
+- do not introduce unsupported numerical thresholds, timelines, or performance claims in an option;
+- keep the turn to the selected decision; do not append an independent fact request or side question, even as a helpful aside—queue it for the next frontier;
+- give one recommendation only; do not append generic implementation advice, best practices, or a second recommendation;
+- if no meaningful options are known, ask one open question to establish the decision frame, then return to choice mode;
+- preserve the frontier, fact/decision, anti-anchoring, uncertainty, and no-side-effect rules.
+
+Choice mode changes presentation, not rigor or authority. It does not require a structured UI or vendor-specific tool.
 
 ## Workflow
 
@@ -49,6 +68,7 @@ Build a private map of:
 - dependencies between decisions;
 - important risks, alternatives, and evidence still missing.
 
+Classify each load-bearing item as `stated`, `verified`, `assumption`, `unknown`, `preference`, or `decision`. Never silently upgrade an assumption or user claim into verified fact.
 If the scope is too broad for one session, ask the user to choose a slice before opening a large decision tree.
 
 ### 2. Select the frontier
@@ -71,7 +91,7 @@ Use this shape:
 ➡️ **Recommendation:** <a reasoned default or strawman the user can accept, reject, or modify>
 ```
 
-A good question is narrow enough to answer, consequential enough to matter, and attached to a branch. Do not ask a question whose answer would not change the work. Keep the user-visible turn to the question, necessary context, and recommendation; do not append an internal quality check or a second draft. Recommendations must separate evidence from assumptions. If the prompt does not establish a customer capability, budget, staffing level, or operational fact, label it as a hypothesis or ask for it; do not smuggle it into the recommendation as settled context. Do not invent numerical estimates unless the user supplied them or explicitly asked for an estimate; ask for the missing budget or use qualitative bounds instead.
+A good question is narrow enough to answer, consequential enough to matter, and attached to a branch. Do not ask a question whose answer would not change the work. Keep the user-visible turn to the question, necessary context, and recommendation; do not append an internal quality check, a second draft, or repeated conclusions. State each material trade-off and recommendation once. Recommendations must separate evidence from assumptions. If the prompt does not establish a customer capability, budget, staffing level, or operational fact, label it as a hypothesis or ask for it; do not smuggle it into the recommendation as settled context. Do not invent numerical estimates, costs, dates, timelines, ranges, or performance figures unless the user supplied them or explicitly asked for an estimate; ask for the missing value or use qualitative bounds instead. For technical comparisons, do not present generic operational claims or recovery figures as verified without evidence; reason conditionally when they are not checked.
 
 ### 4. Follow the answer
 
@@ -100,7 +120,7 @@ The interview is ready to close when all of the following hold:
 - the desired outcome and scope are concrete;
 - high-impact decisions have an owner and an explicit choice;
 - constraints, non-goals, dependencies, and success evidence are stated;
-- important alternatives were rejected or intentionally left open;
+- important alternatives were rejected or intentionally left open; if multiple viable options remain, they were compared against the same criteria and the strongest alternative was steelmanned;
 - assumptions are labeled, contradictions are resolved, and deferred questions have a next trigger;
 - the next concrete action is possible without silently inventing a decision.
 

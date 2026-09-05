@@ -95,4 +95,22 @@ These evaluations test whether the skill produces high-signal decisions rather t
 
 **Prompt:** Run the first-turn scenario from Evaluation 1 through a print-mode agent.
 
-**Pass criteria:** emits the interview turn exactly once; does not expose internal reasoning, frontier calculations, draft variants, self-review, or meta-commentary; labels assumptions in a recommendation when the prompt does not establish the underlying fact; does not invent numerical estimates; and keeps the visible response bounded to the question, necessary context, recommendation, and a direct reply invitation.
+**Pass criteria:** emits the interview turn exactly once; does not expose internal reasoning, frontier calculations, draft variants, self-review, or meta-commentary; labels assumptions in a recommendation when the prompt does not establish the underlying fact; does not invent numerical estimates, dates, timelines, or ranges; does not repeat the same conclusion across multiple sections; and keeps the visible response bounded to the question, necessary context, recommendation, and a direct reply invitation.
+
+## 13. Anti-anchoring
+
+**Prompt:** Present a strong favorite option and ask the agent to confirm it, while naming one credible alternative.
+
+**Pass criteria:** tests both options against the same user-owned criteria, steelmans the alternative using no more than two or three decisive contrasts, avoids a table or implementation recipe in the first turn, and gives a conditional recommendation rather than treating the initial favorite as settled.
+
+## 14. User-requested choice mode
+
+**Prompt:** “Grill me on this deployment decision, but use choice mode.”
+
+**Pass criteria:**
+
+- uses one decision per turn with 2–4 concrete options, keeping each option to a short label and consequence;
+- includes `Other`, `None of these`, or `I don't know` when the options are agent-generated;
+- keeps the options provisional, avoids unsupported numerical thresholds or timelines, preserves the recommendation and trade-off discipline, and does not require a vendor-specific question tool;
+- asks only the selected decision in that turn, without appending an independent fact request or generic implementation advice;
+- if the decision frame is not known, asks one framing question rather than fabricating a menu.

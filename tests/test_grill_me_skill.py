@@ -37,6 +37,19 @@ class GrillMeSkillStructureTests(unittest.TestCase):
             "Keep internal reasoning private",
             "separate evidence from assumptions",
             "Do not invent numerical estimates",
+            "State each material trade-off and recommendation once",
+            "two or three decisive contrasts",
+            "stated",
+            "steelman",
+            "choice mode",
+            "2–4 concrete options",
+            "one short label and consequence per option",
+            "None of these",
+            "Choice mode changes presentation",
+            "unsupported numerical thresholds",
+            "independent fact request or side question",
+            "one recommendation only",
+            "generic implementation advice",
         )
         for phrase in required:
             with self.subTest(phrase=phrase):
@@ -49,6 +62,17 @@ class GrillMeSkillStructureTests(unittest.TestCase):
         self.assertNotIn("AskUserQuestion", self.skill)
         self.assertNotIn("ToolSearch", self.skill)
         self.assertNotIn("/home/", self.skill)
+
+    def test_readme_wiring(self):
+        readme = (self.root.parents[1] / "README.md").read_text()
+        for marker in (
+            "### `grill-me`",
+            "cp -R agent-skills/skills/grill-me ~/.omp/agent/skills/",
+            "/skill:grill-me",
+            "  grill-me/",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, readme)
 
 
 if __name__ == "__main__":

@@ -22,13 +22,16 @@ Other implementations add depth-first questioning, codebase inspection, decision
 - **Scope:** plans, designs, ideas, and decisions across technical and non-technical domains.
 - **State:** stateless by default; no files unless explicitly requested.
 - **Question cadence:** one focused question by default; at most three independent questions in a speed-oriented batch.
+- **Question mode:** open-ended by default; honor an explicit request for choice mode with 2–4 options and an escape hatch, without requiring structured UI. Choice options must stay compact, add no unsupported thresholds, not contain a second question, and end with one recommendation rather than implementation advice.
 - **Ordering:** dependency-aware frontier, highest-impact branch first, depth before breadth.
 - **Recommendations:** every question gets a concrete recommendation or strawman.
 - **Fact/decision split:** retrieve facts from the environment; leave choices to the user.
 - **Uncertainty:** distinguish decide, defer, research, and prototype instead of forcing an answer.
 - **Stopping:** risk-based convergence, explicit user stop, scope split, or prototype/test boundary; no arbitrary question count.
 - **Side effects:** reaching agreement does not authorize implementation or external action.
-- **Output hygiene:** emit each question exactly once, keep reasoning/meta-review private, label recommendations' unsupported context as assumptions, and do not invent numerical estimates.
+- **Output hygiene:** emit each question exactly once, keep reasoning/meta-review private, label recommendations' unsupported context as assumptions, do not invent numerical estimates, and state each material trade-off or recommendation once.
+- **Comparison budget:** when anti-anchoring is needed, use only the decisive contrasts in the first turn; no tables, mini designs, or implementation recipes unless requested.
+- **State tracking:** classify load-bearing items as stated, verified, assumption, unknown, preference, or decision; compare live alternatives against shared criteria and steelman the strongest one before convergence.
 
 ## Performance model
 
