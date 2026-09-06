@@ -54,6 +54,60 @@ class ProjectFoundationSkillStructureTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, block)
 
+    def test_initializer_completeness_guard_is_explicit(self):
+        marker = "## Initializer completeness guard"
+        start = self.skill.index(marker)
+        end = self.skill.index("## Procedure", start)
+        guard = self.skill[start:end]
+        required = (
+            "applicability matrix",
+            "`create`",
+            "`preserve`",
+            "`not applicable`",
+            "baseline artifacts cannot be marked `not applicable`",
+            "Not started",
+            "no code yet",
+            "would be sparse",
+            "Any candidate omitted without a disposition is a failure",
+        )
+        for phrase in required:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, guard)
+
+    def test_preimplementation_design_requires_a_real_foundation_tier(self):
+        required = (
+            "design, requirements, product, or architecture document",
+            "at least the Standard tier",
+            "unless the user explicitly chooses Minimal",
+            "including a case variant such as `design.md`",
+            "remaining selected-tier baseline artifacts",
+        )
+        for phrase in required:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.skill)
+
+    def test_report_and_completion_require_full_accounting(self):
+        report_start = self.skill.index("Report:")
+        report_end = self.skill.index("## Completion criteria", report_start)
+        report = self.skill[report_start:report_end]
+        for phrase in (
+            "Applicability matrix",
+            "every candidate with create, preserve, or not applicable plus evidence",
+            "only conditional files marked not applicable",
+        ):
+            with self.subTest(report_phrase=phrase):
+                self.assertIn(phrase, report)
+
+        completion_start = self.skill.index("## Completion criteria")
+        completion = self.skill[completion_start:]
+        for phrase in (
+            "applicability matrix covers every candidate",
+            "every selected-tier baseline artifact is created or explicitly preserved",
+            "every conditional artifact with an evidenced project surface is created",
+        ):
+            with self.subTest(completion_phrase=phrase):
+                self.assertIn(phrase, completion)
+
     def test_references_exist_and_skill_is_portable(self):
         for reference in re.findall(r"`(references/[^`]+\.md)`", self.skill):
             with self.subTest(reference=reference):

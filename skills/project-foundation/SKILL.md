@@ -43,7 +43,7 @@ Do not use for:
 
 ## Foundation tiers
 
-Choose the smallest tier that fits the project. State the selected tier and why.
+Choose the smallest tier that fits the intended project scope and lifecycle, not merely the amount of code currently present. State the selected tier and why. A pre-implementation foundation request accompanied by a design, requirements, product, or architecture document is governed by the completeness guard below and is at least Standard unless the user explicitly chooses Minimal.
 
 ### Minimal
 
@@ -113,7 +113,19 @@ RELIABILITY.md
 SECURITY.md
 ```
 
-Do not create empty placeholder files merely to match the full layout.
+Do not create empty placeholder files merely to match the full layout. A justified foundation document is not an empty placeholder: populate it with confirmed facts, explicit unknowns, applicable commands, and the next question or check.
+
+## Initializer completeness guard
+
+Before creating files, build an applicability matrix for every candidate in the selected tier and every conditional root document or directory. Give each candidate exactly one disposition:
+
+- `create` — create it now and populate it with the facts and unknowns currently available;
+- `preserve` — an existing authoritative or generator-owned artifact already serves the purpose;
+- `not applicable` — the repository has concrete evidence that the corresponding project surface does not exist, or the user explicitly declined the artifact.
+
+The selected tier’s baseline artifacts cannot be marked `not applicable`. They must be created or explicitly preserved. Conditional artifacts must be created when their surface is evidenced. Report the matrix, including the evidence for every `not applicable` decision, before declaring the foundation complete. Any candidate omitted without a disposition is a failure of the initializer.
+
+A repository with no implementation can still need a complete foundation. “Not started,” “no code yet,” “the details are unknown,” and “this would be sparse” are forbidden reasons to skip an appropriate artifact. Capture the current state as unknown or undecided and record the next check instead. If the repository contains a design, requirements, product, or architecture document and the user asked for foundation before implementation, treat that as evidence of an intended multi-session project and select at least the Standard tier unless the user explicitly chooses Minimal. Preserve the existing design file, including a case variant such as `design.md`, link it from `AGENTS.md`, and create the remaining selected-tier baseline artifacts.
 
 ## Procedure
 
@@ -166,6 +178,8 @@ Extract or confirm:
 Do not invent missing details. Mark unknowns in `PROGRESS.md` or ask the user when they block the foundation.
 
 ### 3. Create the repository map
+
+Before creating any file in this step, apply the initializer completeness guard. The matrix is part of the foundation run, not an optional after-the-fact explanation; do not continue with document creation while any candidate lacks a disposition.
 
 Create `AGENTS.md` only when an agent will work in the repository. Keep it roughly 50–200 lines, with the shortest useful version preferred.
 
@@ -367,8 +381,9 @@ Report:
 
 ```text
 Foundation tier: <minimal | standard | full>
+Applicability matrix: <every candidate with create, preserve, or not applicable plus evidence>
 Created: <exact files and directories>
-Skipped: <potential files not created, with reasons>
+Skipped: <only conditional files marked not applicable, with concrete evidence or explicit user decision>
 Canonical map: <AGENTS.md and deeper sources>
 Feature contract: <path or not applicable>
 Decision layer: <path or not applicable>
@@ -381,7 +396,10 @@ Next useful move: <one concrete step>
 
 A foundation is complete only when:
 
-- the selected tier is justified;
+- the selected tier is justified from intended project scope, not merely current implementation state;
+- the applicability matrix covers every candidate and every omission has a valid disposition;
+- every selected-tier baseline artifact is created or explicitly preserved;
+- every conditional artifact with an evidenced project surface is created;
 - existing context and generators were checked before writing;
 - `AGENTS.md` is a short router when present;
 - architecture, progress, decisions, plans, and feature state have distinct homes;

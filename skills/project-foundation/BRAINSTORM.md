@@ -211,6 +211,20 @@ Do not require all four for every tiny project. The initializer should create th
 
 The 2026-09-06 X discussion sharpened the existing “inspect before creating” principle. The generated `AGENTS.md` should tell coding agents to identify the required outcome, inspect relevant paths, and try deletion, reuse, configuration, native platform facilities, standard-library functions, or existing dependencies before adding code. It should require the smallest **complete** change while explicitly protecting validation, error handling, security, accessibility, tests, observability, and readability. The short YAGNI/one-liner formulation is not adopted because it can reward code golf and dropped safety checks; the full source discussion is recorded in `references/source-index.md`.
 
+## Gap fix — initializer completeness guard
+
+An actual pre-implementation run exposed a loophole: the agent treated “the project has not started” and “this document would be sparse” as reasons to skip foundation files. That reverses the purpose of this skill. A thin repository can need its foundation before implementation begins.
+
+Adopted guard:
+
+- Build an applicability matrix for every selected-tier baseline and conditional artifact before writing.
+- Give each candidate exactly one disposition: `create`, `preserve`, or evidence-backed `not applicable`.
+- Never use “not started,” “no code yet,” “unknown,” or “would be sparse” as a skip reason. Put known facts, explicit unknowns, and the next check into the document instead.
+- Treat a design, requirements, product, or architecture document plus a request for pre-implementation foundation as evidence for at least the Standard tier unless the user explicitly chooses Minimal.
+- Preserve a case-variant existing design file, route to it from `AGENTS.md`, and create the remaining selected-tier baseline artifacts.
+
+This guard preserves the anti-ceremony rule by limiting `not applicable` to conditional surfaces that are demonstrably absent or explicitly declined; it does not allow the initializer to silently omit justified baseline work.
+
 ## Initial design stance
 
 - Inspect before creating.
