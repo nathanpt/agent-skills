@@ -207,6 +207,10 @@ The skill should treat `PROGRESS.md`, Git history, and the feature list as compl
 
 Do not require all four for every tiny project. The initializer should create them when the project’s duration, complexity, or number of requirements justifies them.
 
+## Adopted change — minimal implementation discipline
+
+The 2026-09-06 X discussion sharpened the existing “inspect before creating” principle. The generated `AGENTS.md` should tell coding agents to identify the required outcome, inspect relevant paths, and try deletion, reuse, configuration, native platform facilities, standard-library functions, or existing dependencies before adding code. It should require the smallest **complete** change while explicitly protecting validation, error handling, security, accessibility, tests, observability, and readability. The short YAGNI/one-liner formulation is not adopted because it can reward code golf and dropped safety checks; the full source discussion is recorded in `references/source-index.md`.
+
 ## Initial design stance
 
 - Inspect before creating.

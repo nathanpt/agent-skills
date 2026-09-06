@@ -1,6 +1,6 @@
 ---
 name: project-foundation
-description: Scaffold a new project with concise agent context, docs, plans, decisions, and verification.
+description: Create concise project context, docs, plans, and checks.
 ---
 
 # Project Foundation
@@ -11,7 +11,8 @@ This skill initializes a project. For an established repository with history, co
 
 ## Core principles
 
-- Inspect before creating.
+- Inspect before creating: confirm the required outcome, search for what already exists, and add only the smallest complete change.
+- Prefer deletion, reuse, configuration, native platform facilities, standard-library functions, and already-installed dependencies before new code or dependencies.
 - Keep `AGENTS.md` a short router, not an encyclopedia.
 - Store deeper knowledge in versioned repository-local documents.
 - Create only documents that answer a real project question.
@@ -20,6 +21,7 @@ This skill initializes a project. For an established repository with history, co
 - Match verification depth to the changed boundary.
 - Record decisions without rewriting history.
 - Leave a clean, understandable handoff state after each session.
+- Never trade away validation, error handling, security, accessibility, tests, observability, or readability merely to reduce code.
 - Do not add code comments unless the project explicitly requires them; prefer clear names, tests, and documentation where appropriate.
 
 ## When to use
@@ -184,6 +186,19 @@ Example routing entries:
 - Read docs/exec-plans/active/ when continuing planned work.
 - Run the applicable verification level before marking work complete.
 ```
+
+When the repository will be maintained with code, include this compact implementation-discipline block in `AGENTS.md`:
+
+```text
+## Change discipline
+
+- Before adding code or scaffolding, inspect the relevant paths and ask whether the requested outcome can be met by deleting, reusing, configuring, or extending something already present.
+- Check existing implementations, platform facilities, standard-library functions, and installed dependencies before adding new code or dependencies.
+- Implement the smallest complete change that satisfies the requirement. Do not add speculative abstractions, generality, files, or configuration.
+- Do not reduce validation, error handling, security checks, accessibility, tests, observability, or readability merely to reduce lines.
+```
+
+For a documentation-only or otherwise non-code project, omit this block when it would add noise. Treat “smallest” as a constraint on unnecessary work, not as permission to ship an incomplete or unsafe result.
 
 Do not put the full architecture, historical incident log, every preference, or every topic rule into `AGENTS.md`.
 

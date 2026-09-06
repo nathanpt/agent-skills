@@ -55,6 +55,16 @@ This directory contains source material and original synthesis for the draft ski
 - **Candidate principles:** record significant decisions with context, drivers, options, outcome, consequences, and confirmation; keep records versioned beside the code; use `docs/decisions/`; supersede old decisions rather than silently rewriting history; use categories only when the project needs them.
 - **Adoption tier:** optional but strongly recommended for projects with meaningful architectural, data, security, deployment, dependency, or user-visible tradeoffs.
 
+## Minimal-change engineering
+
+- **Original engineering framing:** https://x.com/techNmak/status/2096243571410276392
+- **Critical response:** https://x.com/nateberkopec/status/2096480942399594633
+- **Supporting implementation and benchmark:** https://github.com/DietrichGebert/ponytail and https://github.com/DietrichGebert/ponytail/blob/main/benchmarks/results/2026-06-18-agentic.md
+- **Retrieved:** 2026-09-06
+- **Adopted principle:** before adding code or scaffolding, inspect the repository and prefer deletion, reuse, configuration, native facilities, standard-library functions, or existing dependencies; then implement the smallest complete change.
+- **Safety boundary:** minimality must not remove validation, error handling, security, accessibility, tests, observability, or readability. The cited benchmark is directional rather than universal: it uses one model, one repository, and a small run count; its short YAGNI prompt was less consistent and dropped a security guard in one tested run.
+- **Adoption point:** generated `AGENTS.md` under the repository map / global hard-constraints section.
+
 ## Future sources
 
 Add OpenAI, Anthropic, and other source links here as they are provided. Record what principle each source contributes and where it is adopted in the skill.
