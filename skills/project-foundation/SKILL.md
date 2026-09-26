@@ -340,6 +340,17 @@ For cross-component features:
 
 E2E provides integrated evidence; it does not prove the absence of all defects. Skipped or unavailable verification is `unverified`, not passing.
 
+### Agent-generated test guardrails
+
+Before coding, state the behavior, failure modes, and test layer:
+- E2E: critical user workflows.
+- Integration: system boundaries.
+- Unit: deterministic logic.
+
+Write and run a test that fails before implementation. Reject tests that only inflate coverage, duplicate assertions, test internals or trivial constants, or mock away real behavior. Every test must name a plausible regression it catches.
+
+Use E2E for cross-boundary features, not as the sole testing layer. Retain the exact command and failure artifacts when available. Tests after code are acceptable for regressions, legacy characterization, or external contracts; state what they protect.
+
 ### 9. Establish the first state
 
 Run the project’s real setup and verification commands when safe. Record exact results in `PROGRESS.md`.
