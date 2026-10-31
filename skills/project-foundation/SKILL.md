@@ -171,9 +171,66 @@ It should contain only:
 
 1. Project overview.
 2. Quick-start/setup/test/check commands.
-3. A small prioritized set of global hard constraints.
+3. A small prioritized set of global hard constraints — **including the five mandatory rules below**.
 4. Links to topic documents with applicability conditions.
 5. Completion and reporting requirements.
+
+#### Mandatory `AGENTS.md` rules
+
+These five rules are **required, verbatim, in every generated `AGENTS.md`**, above the project's own constraints. Do not paraphrase them, summarize them into one bullet, or drop any of them because they seem redundant with the rest of the skill. Their purpose is to be read by an agent that has not loaded this skill.
+
+```markdown
+## Planning
+
+Before writing code, state the plan abstractly: what the system does, which
+boundaries the change crosses, what data moves and in which direction, and what
+would prove the change works. Solve the general problem before the specific
+case. Do not enumerate implementation steps as a substitute for understanding
+the shape of the problem.
+
+## Testing
+
+Tests exist to catch regressions, not to raise a coverage number. An agent will
+generate many small, trivial unit tests that assert implementation details and
+prove nothing; refuse that.
+
+- Prefer a small number of high-value tests over a large number of shallow ones.
+- Every test names the regression it catches in its name or its message.
+- Do not test internals, private helpers, framework behavior, or constants.
+- Do not mock away the behavior under test.
+- For cross-component or user-visible changes, unit tests are necessary but
+  insufficient: the change is not verified until the real path runs end to end.
+- A test that would still pass if the feature were deleted is worthless.
+
+## End-to-end verification
+
+Only a full pipeline run counts as real verification. Unit tests are
+systematically blind to component-boundary defects: interface mismatches, state
+propagation, resource lifecycle, and environment differences all survive a green
+unit suite.
+
+- Level 1: unit tests (must pass)
+- Level 2: integration tests (must pass)
+- Level 3: end-to-end run through the real system (must pass whenever the change
+  crosses a boundary)
+- Skipping a required level means **not complete**, and is reported as
+  `unverified`, never as passing.
+- Record the exact command and the observed result. "Should work" is not
+  evidence.
+
+## Verification errors
+
+Failure messages must state what failed, why it matters, and how to fix it. An
+error that says only what broke, without the fix, wastes a session.
+
+## Completion
+
+Never report work as complete, done, passing, or shipped on the strength of code
+that was not executed. Distinguish implemented from verified. State what remains
+unverified and what evidence would close it.
+```
+
+Adjust only if the project has a stronger, more specific version of the same rule — never a weaker one.
 
 Example routing entries:
 
@@ -194,6 +251,8 @@ Create `ARCHITECTURE.md` when the project has meaningful structure. It should an
 - How do the major components relate?
 - What are the important boundaries and invariants?
 - Where should an agent look next?
+
+**Do not invent a data/ or storage layer speculatively.** If a project consumes an existing external data system, the architecture records how it is reached and which module owns that boundary — it does not add a local data tier for symmetry. Ask before creating any directory whose purpose is storage, caching, or data access, and record where the storage actually lives (hostname or service, not just a folder name) so a later move does not silently break the project.
 
 Create `PROGRESS.md` when work spans sessions or agents. It should record:
 
@@ -347,7 +406,11 @@ Before coding, state the behavior, failure modes, and test layer:
 - Integration: system boundaries.
 - Unit: deterministic logic.
 
-Write and run a test that fails before implementation. Reject tests that only inflate coverage, duplicate assertions, test internals or trivial constants, or mock away real behavior. Every test must name a plausible regression it catches.
+Agents reliably produce a large volume of low-value unit tests. Push back on that by default: a smaller number of tests that would actually fail if the feature regressed beats a broad shallow suite.
+
+Write and run a test that fails before implementation. Reject tests that only inflate coverage, duplicate assertions, test internals or trivial constants, or mock away real behavior. Every test must name a plausible regression it catches. If you cannot name the regression, do not write the test.
+
+One test that would fail loudly on a real regression is worth twenty that assert getters, private helpers, or library behavior the project does not own.
 
 Use E2E for cross-boundary features, not as the sole testing layer. Retain the exact command and failure artifacts when available. Tests after code are acceptable for regressions, legacy characterization, or external contracts; state what they protect.
 
@@ -379,7 +442,8 @@ A foundation is complete only when:
 
 - the selected tier is justified;
 - existing context and generators were checked before writing;
-- `AGENTS.md` is a short router when present;
+- `AGENTS.md` is a short router when present, and contains the five mandatory rules verbatim (planning, testing, end-to-end verification, verification errors, completion);
+- no data, storage, or cache layer was created without an explicit reason and without recording where the storage actually lives;
 - architecture, progress, decisions, plans, and feature state have distinct homes;
 - every created document has a purpose and is not an empty placeholder;
 - startup and verification commands are known or marked unknown;
