@@ -1,6 +1,6 @@
 ---
 name: project-foundation
-description: Scaffold a new project with concise agent context, docs, plans, decisions, and verification.
+description: Create concise project context, docs, plans, and checks.
 ---
 
 # Project Foundation
@@ -11,7 +11,8 @@ This skill initializes a project. For an established repository with history, co
 
 ## Core principles
 
-- Inspect before creating.
+- Inspect before creating: confirm the required outcome, search for what already exists, and add only the smallest complete change.
+- Prefer deletion, reuse, configuration, native platform facilities, standard-library functions, and already-installed dependencies before new code or dependencies.
 - Keep `AGENTS.md` a short router, not an encyclopedia.
 - Store deeper knowledge in versioned repository-local documents.
 - Create only documents that answer a real project question.
@@ -20,6 +21,7 @@ This skill initializes a project. For an established repository with history, co
 - Match verification depth to the changed boundary.
 - Record decisions without rewriting history.
 - Leave a clean, understandable handoff state after each session.
+- Never trade away validation, error handling, security, accessibility, tests, observability, or readability merely to reduce code.
 - Do not add code comments unless the project explicitly requires them; prefer clear names, tests, and documentation where appropriate.
 
 ## When to use
@@ -41,7 +43,7 @@ Do not use for:
 
 ## Foundation tiers
 
-Choose the smallest tier that fits the project. State the selected tier and why.
+Choose the smallest tier that fits the intended project scope and lifecycle, not merely the amount of code currently present. State the selected tier and why. A pre-implementation foundation request accompanied by a design, requirements, product, or architecture document is governed by the completeness guard below and is at least Standard unless the user explicitly chooses Minimal.
 
 ### Minimal
 
@@ -111,7 +113,19 @@ RELIABILITY.md
 SECURITY.md
 ```
 
-Do not create empty placeholder files merely to match the full layout.
+Do not create empty placeholder files merely to match the full layout. A justified foundation document is not an empty placeholder: populate it with confirmed facts, explicit unknowns, applicable commands, and the next question or check.
+
+## Initializer completeness guard
+
+Before creating files, build an applicability matrix for every candidate in the selected tier and every conditional root document or directory. Give each candidate exactly one disposition:
+
+- `create` — create it now and populate it with the facts and unknowns currently available;
+- `preserve` — an existing authoritative or generator-owned artifact already serves the purpose;
+- `not applicable` — the repository has concrete evidence that the corresponding project surface does not exist, or the user explicitly declined the artifact.
+
+The selected tier’s baseline artifacts cannot be marked `not applicable`. They must be created or explicitly preserved. Conditional artifacts must be created when their surface is evidenced. Report the matrix, including the evidence for every `not applicable` decision, before declaring the foundation complete. Any candidate omitted without a disposition is a failure of the initializer.
+
+A repository with no implementation can still need a complete foundation. “Not started,” “no code yet,” “the details are unknown,” and “this would be sparse” are forbidden reasons to skip an appropriate artifact. Capture the current state as unknown or undecided and record the next check instead. If the repository contains a design, requirements, product, or architecture document and the user asked for foundation before implementation, treat that as evidence of an intended multi-session project and select at least the Standard tier unless the user explicitly chooses Minimal. Preserve the existing design file, including a case variant such as `design.md`, link it from `AGENTS.md`, and create the remaining selected-tier baseline artifacts.
 
 ## Procedure
 
@@ -165,6 +179,8 @@ Do not invent missing details. Mark unknowns in `PROGRESS.md` or ask the user wh
 
 ### 3. Create the repository map
 
+Before creating any file in this step, apply the initializer completeness guard. The matrix is part of the foundation run, not an optional after-the-fact explanation; do not continue with document creation while any candidate lacks a disposition.
+
 Create `AGENTS.md` only when an agent will work in the repository. Keep it roughly 50–200 lines, with the shortest useful version preferred.
 
 It should contain only:
@@ -174,6 +190,21 @@ It should contain only:
 3. A small prioritized set of global hard constraints — **including the five mandatory rules below**.
 4. Links to topic documents with applicability conditions.
 5. Completion and reporting requirements.
+
+Structure the file in exactly two parts:
+
+- **Part 1 — Project.** Items 1–5 above: what this repository is, its commands, its own
+  hard constraints, its routing. Written per repository; never shared between projects.
+- **Part 2 — Standard rules (all projects).** The house rule set — abstract planning,
+  regression-focused testing, end-to-end verification, invariants and boundaries, session
+  discipline, fix-oriented errors, completion honesty, instruction hygiene. Identical in
+  every repository.
+
+Do not write Part 2 from scratch or paraphrase it. Copy it verbatim from
+[`references/agents-md-general-rules.md`](references/agents-md-general-rules.md), which
+holds the canonical block plus the template and its verification steps. Line 1 of every
+generated file is the operator's reply-protocol canary, above all headings; substitute the
+operator's own form of address and never leave a placeholder.
 
 #### Mandatory `AGENTS.md` rules
 
@@ -292,6 +323,19 @@ Example routing entries:
 - Read docs/exec-plans/active/ when continuing planned work.
 - Run the applicable verification level before marking work complete.
 ```
+
+When the repository will be maintained with code, include this compact implementation-discipline block in `AGENTS.md`:
+
+```text
+## Change discipline
+
+- Before adding code or scaffolding, inspect the relevant paths and ask whether the requested outcome can be met by deleting, reusing, configuring, or extending something already present.
+- Check existing implementations, platform facilities, standard-library functions, and installed dependencies before adding new code or dependencies.
+- Implement the smallest complete change that satisfies the requirement. Do not add speculative abstractions, generality, files, or configuration.
+- Do not reduce validation, error handling, security checks, accessibility, tests, observability, or readability merely to reduce lines.
+```
+
+For a documentation-only or otherwise non-code project, omit this block when it would add noise. Treat “smallest” as a constraint on unnecessary work, not as permission to ship an incomplete or unsafe result.
 
 Do not put the full architecture, historical incident log, every preference, or every topic rule into `AGENTS.md`.
 
@@ -477,8 +521,9 @@ Report:
 
 ```text
 Foundation tier: <minimal | standard | full>
+Applicability matrix: <every candidate with create, preserve, or not applicable plus evidence>
 Created: <exact files and directories>
-Skipped: <potential files not created, with reasons>
+Skipped: <only conditional files marked not applicable, with concrete evidence or explicit user decision>
 Canonical map: <AGENTS.md and deeper sources>
 Feature contract: <path or not applicable>
 Decision layer: <path or not applicable>
@@ -491,7 +536,10 @@ Next useful move: <one concrete step>
 
 A foundation is complete only when:
 
-- the selected tier is justified;
+- the selected tier is justified from intended project scope, not merely current implementation state;
+- the applicability matrix covers every candidate and every omission has a valid disposition;
+- every selected-tier baseline artifact is created or explicitly preserved;
+- every conditional artifact with an evidenced project surface is created;
 - existing context and generators were checked before writing;
 - `AGENTS.md` is a short router when present, and contains the mandatory rules verbatim (reply protocol, planning, testing, end-to-end verification, invariants and boundaries, session discipline, verification errors, completion, status footer, instruction hygiene);
 - the reply-protocol placeholder was replaced with a real form of address, not left as `[your name]`;
