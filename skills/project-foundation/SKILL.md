@@ -191,6 +191,21 @@ It should contain only:
 4. Links to topic documents with applicability conditions.
 5. Completion and reporting requirements.
 
+Structure the file in exactly two parts:
+
+- **Part 1 — Project.** Items 1–5 above: what this repository is, its commands, its own
+  hard constraints, its routing. Written per repository; never shared between projects.
+- **Part 2 — Standard rules (all projects).** The house rule set — abstract planning,
+  regression-focused testing, end-to-end verification, invariants and boundaries, session
+  discipline, fix-oriented errors, completion honesty, instruction hygiene. Identical in
+  every repository.
+
+Do not write Part 2 from scratch or paraphrase it. Copy it verbatim from
+[`references/agents-md-general-rules.md`](references/agents-md-general-rules.md), which
+holds the canonical block plus the template and its verification steps. Line 1 of every
+generated file is the operator's reply-protocol canary, above all headings; substitute the
+operator's own form of address and never leave a placeholder.
+
 Example routing entries:
 
 ```text
