@@ -5,9 +5,17 @@ description: Create concise project context, docs, plans, and checks.
 
 # Project Foundation
 
-Use this skill when starting a new project or when an early repository lacks a coherent operating foundation. Create the smallest useful repository-local knowledge system so future agents can discover the project without loading one oversized `AGENTS.md`.
+Use this skill when a repository needs a coherent operating foundation: agent context, durable documents, plans, decisions, and verification. It has two modes.
 
-This skill initializes a project. For an established repository with history, conflicting files, generators, or stale documentation, use `harness-bootstrap` instead.
+## Choose the mode first
+
+**Creation mode** — the repository is new, empty, or early-stage with no trustworthy context system. Follow this file from top to bottom.
+
+**Retrofit mode** — the repository already has history, code, and probably some agent-facing documents. Read `references/retrofit-existing-repo.md` and follow it instead of this file's procedure. It triages existing context, verifies claims against code and Git, respects generator ownership, and reconciles an existing `AGENTS.md` into the standard two-part shape without discarding verified content.
+
+Both modes produce the same artifact: a two-part `AGENTS.md` per `references/agents-md-general-rules.md`. Neither mode hands off to another skill; this skill covers the whole job.
+
+If you are unsure which mode applies, look for history. Commits beyond an initial scaffold, an existing `AGENTS.md`, or real source code mean retrofit.
 
 ## Core principles
 
@@ -30,16 +38,19 @@ Use for:
 
 - a new repository or empty Git project;
 - an early project with unclear structure or no agent-facing context;
+- an existing repository whose `AGENTS.md` predates the two-part standard, or that has no
+  trustworthy agent context yet (retrofit mode);
 - a project expected to span multiple sessions or agents;
 - a project with multiple user-visible requirements that need explicit scope;
 - a project where architectural decisions, execution plans, or verification need durable homes.
 
 Do not use for:
 
-- a mature repository that already has a trustworthy context system;
+- a mature repository whose two-part `AGENTS.md` is already current and trustworthy;
 - a single-file experiment or disposable script unless the user asks for the structure;
 - a documentation-only request that does not establish a project foundation;
-- blindly replacing existing `AGENTS.md`, architecture, progress, or generator-owned files.
+- blindly replacing existing `AGENTS.md`, architecture, progress, or generator-owned files —
+  retrofit mode reconciles them, and preserves verified content.
 
 ## Foundation tiers
 
@@ -161,7 +172,7 @@ docs/
 
 Read existing instructions, manifests, README material, generators, test configuration, and deployment files before deciding what to create.
 
-If the repository is not actually new or early-stage, stop and recommend `harness-bootstrap`. Do not replace established context under the pretext of initialization.
+If the repository is not actually new or early-stage, switch to **retrofit mode** and follow `references/retrofit-existing-repo.md`. Do not replace established context under the pretext of initialization.
 
 ### 2. Define the project foundation
 

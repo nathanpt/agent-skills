@@ -102,6 +102,75 @@ class ProjectFoundationMandatoryRulesTests(unittest.TestCase):
                 self.assertTrue((self.root / reference).is_file())
 
 
+class ProjectFoundationRetrofitModeTests(unittest.TestCase):
+    """Retrofit mode replaced the retired harness-bootstrap skill; these guard the merge."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1]
+        cls.skill_dir = cls.root / "skills" / "project-foundation"
+        cls.skill = (cls.skill_dir / "SKILL.md").read_text()
+        cls.retrofit_path = cls.skill_dir / "references" / "retrofit-existing-repo.md"
+        cls.retrofit = cls.retrofit_path.read_text() if cls.retrofit_path.exists() else ""
+        cls.readme = (cls.root / "README.md").read_text()
+
+    def test_skill_declares_both_modes(self):
+        for marker in ("Creation mode", "Retrofit mode", "references/retrofit-existing-repo.md"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.skill)
+
+    def test_skill_no_longer_defers_to_a_retired_skill(self):
+        self.assertNotIn(
+            "harness-bootstrap",
+            self.skill,
+            "SKILL.md must not hand off to the retired harness-bootstrap skill",
+        )
+
+    def test_retrofit_reference_exists_and_is_substantive(self):
+        self.assertTrue(self.retrofit_path.exists(), "retrofit reference is missing")
+        self.assertGreater(len(self.retrofit.splitlines()), 100, "retrofit reference is too thin to replace the merged skill")
+
+    def test_retrofit_reference_targets_the_two_part_standard(self):
+        for marker in (
+            "references/agents-md-general-rules.md",
+            "Part 1",
+            "Part 2",
+            "byte-identical",
+            "canary",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.retrofit)
+
+    def test_retrofit_reference_keeps_the_mechanical_safeguards(self):
+        for marker in (
+            "case-insensitively",
+            "generator owns",
+            "not verified",
+            "hypothesis until checked",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.retrofit)
+
+    def test_retrofit_reference_labels_itself_unexercised(self):
+        self.assertIn(
+            "unexercised",
+            self.retrofit.lower(),
+            "merged material must state that it has not been validated in service",
+        )
+
+    def test_retired_skill_is_gone(self):
+        self.assertFalse(
+            (self.root / "skills" / "harness-bootstrap").exists(),
+            "harness-bootstrap should be retired; its content lives in project-foundation/references/",
+        )
+
+    def test_readme_describes_two_modes_and_drops_the_retired_skill(self):
+        self.assertNotIn("harness-bootstrap", self.readme)
+        for marker in ("**creation**", "**retrofit**", "two-part `AGENTS.md`"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.readme)
+
+
 if __name__ == "__main__":
     unittest.main()
 
@@ -227,6 +296,75 @@ class ProjectFoundationSkillStructureTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.assertIn(marker, readme)
+
+
+class ProjectFoundationRetrofitModeTests(unittest.TestCase):
+    """Retrofit mode replaced the retired harness-bootstrap skill; these guard the merge."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1]
+        cls.skill_dir = cls.root / "skills" / "project-foundation"
+        cls.skill = (cls.skill_dir / "SKILL.md").read_text()
+        cls.retrofit_path = cls.skill_dir / "references" / "retrofit-existing-repo.md"
+        cls.retrofit = cls.retrofit_path.read_text() if cls.retrofit_path.exists() else ""
+        cls.readme = (cls.root / "README.md").read_text()
+
+    def test_skill_declares_both_modes(self):
+        for marker in ("Creation mode", "Retrofit mode", "references/retrofit-existing-repo.md"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.skill)
+
+    def test_skill_no_longer_defers_to_a_retired_skill(self):
+        self.assertNotIn(
+            "harness-bootstrap",
+            self.skill,
+            "SKILL.md must not hand off to the retired harness-bootstrap skill",
+        )
+
+    def test_retrofit_reference_exists_and_is_substantive(self):
+        self.assertTrue(self.retrofit_path.exists(), "retrofit reference is missing")
+        self.assertGreater(len(self.retrofit.splitlines()), 100, "retrofit reference is too thin to replace the merged skill")
+
+    def test_retrofit_reference_targets_the_two_part_standard(self):
+        for marker in (
+            "references/agents-md-general-rules.md",
+            "Part 1",
+            "Part 2",
+            "byte-identical",
+            "canary",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.retrofit)
+
+    def test_retrofit_reference_keeps_the_mechanical_safeguards(self):
+        for marker in (
+            "case-insensitively",
+            "generator owns",
+            "not verified",
+            "hypothesis until checked",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.retrofit)
+
+    def test_retrofit_reference_labels_itself_unexercised(self):
+        self.assertIn(
+            "unexercised",
+            self.retrofit.lower(),
+            "merged material must state that it has not been validated in service",
+        )
+
+    def test_retired_skill_is_gone(self):
+        self.assertFalse(
+            (self.root / "skills" / "harness-bootstrap").exists(),
+            "harness-bootstrap should be retired; its content lives in project-foundation/references/",
+        )
+
+    def test_readme_describes_two_modes_and_drops_the_retired_skill(self):
+        self.assertNotIn("harness-bootstrap", self.readme)
+        for marker in ("**creation**", "**retrofit**", "two-part `AGENTS.md`"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, self.readme)
 
 
 if __name__ == "__main__":
