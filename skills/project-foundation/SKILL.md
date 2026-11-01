@@ -106,7 +106,6 @@ Create additional root documents only when the project has the relevant surface:
 ```text
 DESIGN.md
 FRONTEND.md
-PLANS.md
 PRODUCT_SENSE.md
 QUALITY_SCORE.md
 RELIABILITY.md
@@ -114,6 +113,8 @@ SECURITY.md
 ```
 
 Do not create empty placeholder files merely to match the full layout. A justified foundation document is not an empty placeholder: populate it with confirmed facts, explicit unknowns, applicable commands, and the next question or check.
+
+**We deliberately omit the root `PLANS.md` from this layout.** The reference layout includes one, but never defines what belongs in it. Plan state — active, completed, and tracked debt — lives in `docs/exec-plans/`. A second root plan file becomes a competing home for the same content and drifts from the directory that owns it. Do not create one; fold any existing root plan into `docs/exec-plans/` rather than maintaining both.
 
 ## Initializer completeness guard
 
