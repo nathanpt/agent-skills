@@ -32,6 +32,10 @@ Transfers active work to a fresh agent with verified context, preserved decision
 
 Pressure-tests plans, designs, and decisions through a focused, user-owned interview with dependency-aware questions and explicit stopping rules.
 
+### `adr-red-team`
+
+Runs one high-rigor, read-only ADR and architecture review through a named reviewer agent and a separately pinned model role.
+
 ### `project-foundation`
 
 Scaffolds a new or early-stage project with a concise `AGENTS.md`, progressive-disclosure documentation, optional machine-readable feature state, execution plans, and MADR decision records.
@@ -47,6 +51,7 @@ cp -R agent-skills/skills/project-foundation ~/.omp/agent/skills/
 cp -R agent-skills/skills/debug ~/.omp/agent/skills/
 cp -R agent-skills/skills/handoff ~/.omp/agent/skills/
 cp -R agent-skills/skills/grill-me ~/.omp/agent/skills/
+cp -R agent-skills/skills/adr-red-team ~/.omp/agent/skills/
 ```
 
 Invoke it explicitly:
@@ -58,6 +63,7 @@ Invoke it explicitly:
 /skill:debug
 /skill:handoff
 /skill:grill-me
+/skill:adr-red-team
 ```
 
 ## Repository layout
@@ -110,6 +116,16 @@ skills/
     evaluations.md
     references/
       source-index.md
+  adr-red-team/
+    SKILL.md
+    BRAINSTORM.md
+    evaluations.md
+    references/
+      review-lenses.md
+      source-index.md
+    templates/
+      adr-red-team-agent.md
+      model-role-reviewer.yml
 ```
 
 ## Reference policy

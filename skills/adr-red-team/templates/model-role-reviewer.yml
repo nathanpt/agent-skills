@@ -1,0 +1,9 @@
+# OMP model-role overlay for the adr-red-team skill (DRAFT).
+# Merge into your OMP configuration: `reviewer` is a model-role alias that the
+# adr-red-team-reviewer agent references as `model: "@reviewer"`. It routes the
+# model only; it is not an agent and spawns nothing. The coordinator still
+# dispatches the named task agent (see templates/adr-red-team-agent.md). Keep
+# the selector per-environment; this user's local pilot selector is documented
+# only in BRAINSTORM.md ("Local model mapping").
+modelRoles:
+  reviewer: "<MODEL-SELECTOR-PLACEHOLDER>"
