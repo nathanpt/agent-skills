@@ -101,152 +101,6 @@ class ProjectFoundationMandatoryRulesTests(unittest.TestCase):
             with self.subTest(reference=reference):
                 self.assertTrue((self.root / reference).is_file())
 
-
-class ProjectFoundationRetrofitModeTests(unittest.TestCase):
-    """Retrofit mode replaced the retired harness-bootstrap skill; these guard the merge."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.root = Path(__file__).parents[1]
-        cls.skill_dir = cls.root / "skills" / "project-foundation"
-        cls.skill = (cls.skill_dir / "SKILL.md").read_text()
-        cls.retrofit_path = cls.skill_dir / "references" / "retrofit-existing-repo.md"
-        cls.retrofit = cls.retrofit_path.read_text() if cls.retrofit_path.exists() else ""
-        cls.readme = (cls.root / "README.md").read_text()
-
-    def test_skill_declares_both_modes(self):
-        for marker in ("Creation mode", "Retrofit mode", "references/retrofit-existing-repo.md"):
-            with self.subTest(marker=marker):
-                self.assertIn(marker, self.skill)
-
-    def test_skill_no_longer_defers_to_a_retired_skill(self):
-        self.assertNotIn(
-            "harness-bootstrap",
-            self.skill,
-            "SKILL.md must not hand off to the retired harness-bootstrap skill",
-        )
-
-    def test_retrofit_reference_exists_and_is_substantive(self):
-        self.assertTrue(self.retrofit_path.exists(), "retrofit reference is missing")
-        self.assertGreater(len(self.retrofit.splitlines()), 100, "retrofit reference is too thin to replace the merged skill")
-
-    def test_retrofit_reference_targets_the_two_part_standard(self):
-        for marker in (
-            "references/agents-md-general-rules.md",
-            "Part 1",
-            "Part 2",
-            "byte-identical",
-            "canary",
-        ):
-            with self.subTest(marker=marker):
-                self.assertIn(marker, self.retrofit)
-
-    def test_retrofit_reference_keeps_the_mechanical_safeguards(self):
-        for marker in (
-            "case-insensitively",
-            "generator owns",
-            "not verified",
-            "hypothesis until checked",
-        ):
-            with self.subTest(marker=marker):
-                self.assertIn(marker, self.retrofit)
-
-    def test_retrofit_reference_labels_itself_unexercised(self):
-        self.assertIn(
-            "unexercised",
-            self.retrofit.lower(),
-            "merged material must state that it has not been validated in service",
-        )
-
-    def test_retired_skill_is_gone(self):
-        self.assertFalse(
-            (self.root / "skills" / "harness-bootstrap").exists(),
-            "harness-bootstrap should be retired; its content lives in project-foundation/references/",
-        )
-
-    def test_readme_describes_two_modes_and_drops_the_retired_skill(self):
-        self.assertNotIn("harness-bootstrap", self.readme)
-        for marker in ("**creation**", "**retrofit**", "two-part `AGENTS.md`"):
-            with self.subTest(marker=marker):
-                self.assertIn(marker, self.readme)
-
-
-class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
-    """Guards the v1.1 block: promoted Change discipline, unified marker, restored PROGRESS.md."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.root = Path(__file__).parents[1]
-        cls.ref = (cls.root / "skills" / "project-foundation" / "references"
-                   / "agents-md-general-rules.md").read_text()
-        cls.block = re.search(
-            r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->", cls.ref, re.S
-        ).group(1)
-        cls.skill = (cls.root / "skills" / "project-foundation" / "SKILL.md").read_text()
-        cls.retrofit = (cls.root / "skills" / "project-foundation" / "references"
-                        / "retrofit-existing-repo.md").read_text()
-
-    def test_marker_carries_version_and_warning(self):
-        marker = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->", self.ref).group(0)
-        self.assertIn("v1.1", marker)
-        self.assertIn("do not edit in place", marker)
-
-    def test_all_nine_sections_present(self):
-        present = re.findall(r"^### (.+)$", self.block, re.M)
-        self.assertEqual(
-            present,
-            ["Planning", "Testing", "End-to-end verification", "Invariants and boundaries",
-             "Change discipline", "Session discipline", "Verification errors", "Completion",
-             "Instruction hygiene"],
-        )
-
-    def test_change_discipline_lives_in_part_2_not_part_1(self):
-        self.assertIn("### Change discipline", self.block)
-        self.assertNotIn("```text\n## Change discipline", self.skill,
-                         "SKILL.md must not reintroduce the hand-copied per-project block")
-        self.assertIn("not** a per-project block", self.skill)
-
-    def test_session_discipline_names_progress_md_with_section_guidance(self):
-        sd = self.block[self.block.index("### Session discipline"):self.block.index("### Verification errors")]
-        self.assertIn("`PROGRESS.md`", sd)
-        self.assertNotIn("handoff record", sd.lower(),
-                         "'handoff record' was too vague; PROGRESS.md is the guaranteed artifact")
-        for section in ("active-work", "blockers", "verification-status", "next-move"):
-            with self.subTest(section=section):
-                self.assertIn(section, sd)
-        self.assertIn("wastes context", sd)
-
-    def test_overclaiming_lines_are_gone(self):
-        flat = " ".join(self.block.split())
-        for banned in (
-            "Only a full pipeline run counts as real verification",
-            "A test that would still pass if the feature were deleted is worthless",
-            "A rule that exists only as prose will be skipped",
-            "An agent will generate many small, trivial unit tests",
-        ):
-            with self.subTest(banned=banned):
-                self.assertNotIn(banned, flat)
-
-    def test_duplicate_requirements_were_consolidated(self):
-        flat = " ".join(self.block.split())
-        self.assertEqual(flat.count("component or user-visible"), 1,
-                         "end-to-end requirement should be stated once")
-        self.assertNotIn("Every rule states why it exists", self.block)
-        self.assertNotIn("never buried in", self.block)
-
-    def test_version_note_records_the_changelog(self):
-        tail = self.ref[self.ref.index("## Version"):]
-        self.assertIn("v1.1", tail)
-        self.assertIn("Change discipline promoted", tail)
-
-    def test_retrofit_reference_warns_about_the_part_1_copy(self):
-        self.assertIn("Change discipline is the live case", self.retrofit)
-
-
-if __name__ == "__main__":
-    unittest.main()
-
-
 class ProjectFoundationSkillStructureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -511,6 +365,62 @@ class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
 
     def test_retrofit_reference_warns_about_the_part_1_copy(self):
         self.assertIn("Change discipline is the live case", self.retrofit)
+
+
+class ProjectFoundationInvocationScopeTests(unittest.TestCase):
+    """The skill must not compete for automatic selection, and must say so if opened anyway."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1] / "skills" / "project-foundation"
+        cls.skill = (cls.root / "SKILL.md").read_text()
+        end = cls.skill.find("\n---\n", 4)
+        cls.frontmatter = cls.skill[4:end]
+        match = re.search(r"^description: (.+)$", cls.frontmatter, re.MULTILINE)
+        cls.description = match.group(1) if match else ""
+        cls.gate = cls.skill[
+            cls.skill.index("## Stop gate") : cls.skill.index("## Choose the mode first")
+        ]
+        cls.when_to_use = cls.skill[
+            cls.skill.index("## When to use") : cls.skill.index("## Foundation tiers")
+        ]
+
+    def test_model_invocation_is_disabled(self):
+        self.assertIn(
+            "disable-model-invocation: true",
+            self.frontmatter,
+            "skill must not compete for automatic selection",
+        )
+
+    def test_description_names_the_artifact_not_generic_task_nouns(self):
+        self.assertIn("AGENTS.md", self.description)
+        self.assertIn("not feature plans", self.description)
+        for generic in ("docs, plans", "context, docs"):
+            with self.subTest(generic=generic):
+                self.assertNotIn(generic, self.description)
+
+    def test_stop_gate_precedes_the_procedure(self):
+        self.assertLess(
+            self.skill.index("## Stop gate"), self.skill.index("## Choose the mode first")
+        )
+        self.assertLess(self.skill.index("## Stop gate"), self.skill.index("## Procedure"))
+
+    def test_stop_gate_closes_the_skill_for_feature_work(self):
+        for phrase in (
+            "plan, design, implement, debug, refactor, review, or document a feature",
+            "overrides the gate",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.gate)
+
+    def test_trigger_list_is_state_based_not_project_property(self):
+        for banned in (
+            "a project expected to span multiple sessions",
+            "multiple user-visible requirements that need explicit scope",
+            "or verification need durable homes",
+        ):
+            with self.subTest(banned=banned):
+                self.assertNotIn(banned, self.when_to_use)
 
 
 if __name__ == "__main__":

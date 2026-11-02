@@ -1,11 +1,29 @@
 ---
 name: project-foundation
-description: Create concise project context, docs, plans, and checks.
+description: Create or repair a repo's AGENTS.md; not feature plans.
+disable-model-invocation: true
 ---
 
 # Project Foundation
 
-Use this skill when a repository needs a coherent operating foundation: agent context, durable documents, plans, decisions, and verification. It has two modes.
+## Stop gate — check this before reading further
+
+This skill does exactly one job: creating or reconciling a repository's operating foundation. Everything below is that job. Confirm the trigger before using any of it.
+
+Proceed only when **both** hold:
+
+- the repository is new or empty, **or** its `AGENTS.md` and the documents it routes to are missing, non-compliant, stale, or predate the two-part standard;
+- the request is to build or repair that foundation.
+
+Close this skill immediately when **any** of these hold:
+
+- the repository already has a current two-part `AGENTS.md`, and the task is to plan, design, implement, debug, refactor, review, or document a feature in it;
+- the task is a feature plan, execution plan, ADR, progress note, or architecture edit inside an already-founded repository — write it at the path that repository's own `AGENTS.md` routes to, using normal tools;
+- the user asked for code, tests, fixes, analysis, or a plan, and never asked for repository context.
+
+If the gate fails, say in one line that the repository's foundation is already in place and continue with the actual task. Do not read the procedure below "for context" — it is 500 lines about scaffolding, and an already-founded repository does not need it.
+
+This skill never auto-invokes: it is hidden from agent skill selection and runs only when the operator invokes it by name. An explicit invocation **overrides the gate** — the operator asked for foundation work, so run it. If their request is ambiguous about scope, ask which repository and which mode, then proceed.
 
 ## Choose the mode first
 
@@ -36,16 +54,24 @@ If you are unsure which mode applies, look for history. Commits beyond an initia
 
 Use for:
 
-- a new repository or empty Git project;
-- an early project with unclear structure or no agent-facing context;
-- an existing repository whose `AGENTS.md` predates the two-part standard, or that has no
-  trustworthy agent context yet (retrofit mode);
-- a project expected to span multiple sessions or agents;
-- a project with multiple user-visible requirements that need explicit scope;
-- a project where architectural decisions, execution plans, or verification need durable homes.
+- a new or empty Git repository that needs its foundation created (creation mode);
+- an existing repository whose `AGENTS.md` is missing, non-compliant, stale, or predates
+  the two-part standard, or that has no trustworthy agent context yet (retrofit mode);
+- a request to audit or repair the repository's operating foundation itself, independent
+  of any feature work.
+
+Every one of those triggers is a statement about the **repository's context artifacts**.
+Project properties are not triggers. A long-lived project, a multi-session project, and a
+project with many requirements are all reasons the foundation is *valuable* — they are not
+reasons to open this skill in a repository that already has one.
 
 Do not use for:
 
+- planning, designing, implementing, debugging, refactoring, or reviewing a feature — in
+  any repository, whether or not this skill created its foundation;
+- writing a feature plan, execution plan, ADR, progress note, or architecture update in a
+  repository whose foundation is already current — those go to the paths its `AGENTS.md`
+  routes to, using normal tools;
 - a mature repository whose two-part `AGENTS.md` is already current and trustworthy;
 - a single-file experiment or disposable script unless the user asks for the structure;
 - a documentation-only request that does not establish a project foundation;
