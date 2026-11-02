@@ -171,6 +171,78 @@ class ProjectFoundationRetrofitModeTests(unittest.TestCase):
                 self.assertIn(marker, self.readme)
 
 
+class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
+    """Guards the v1.1 block: promoted Change discipline, unified marker, restored PROGRESS.md."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1]
+        cls.ref = (cls.root / "skills" / "project-foundation" / "references"
+                   / "agents-md-general-rules.md").read_text()
+        cls.block = re.search(
+            r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->", cls.ref, re.S
+        ).group(1)
+        cls.skill = (cls.root / "skills" / "project-foundation" / "SKILL.md").read_text()
+        cls.retrofit = (cls.root / "skills" / "project-foundation" / "references"
+                        / "retrofit-existing-repo.md").read_text()
+
+    def test_marker_carries_version_and_warning(self):
+        marker = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->", self.ref).group(0)
+        self.assertIn("v1.1", marker)
+        self.assertIn("do not edit in place", marker)
+
+    def test_all_nine_sections_present(self):
+        present = re.findall(r"^### (.+)$", self.block, re.M)
+        self.assertEqual(
+            present,
+            ["Planning", "Testing", "End-to-end verification", "Invariants and boundaries",
+             "Change discipline", "Session discipline", "Verification errors", "Completion",
+             "Instruction hygiene"],
+        )
+
+    def test_change_discipline_lives_in_part_2_not_part_1(self):
+        self.assertIn("### Change discipline", self.block)
+        self.assertNotIn("```text\n## Change discipline", self.skill,
+                         "SKILL.md must not reintroduce the hand-copied per-project block")
+        self.assertIn("not** a per-project block", self.skill)
+
+    def test_session_discipline_names_progress_md_with_section_guidance(self):
+        sd = self.block[self.block.index("### Session discipline"):self.block.index("### Verification errors")]
+        self.assertIn("`PROGRESS.md`", sd)
+        self.assertNotIn("handoff record", sd.lower(),
+                         "'handoff record' was too vague; PROGRESS.md is the guaranteed artifact")
+        for section in ("active-work", "blockers", "verification-status", "next-move"):
+            with self.subTest(section=section):
+                self.assertIn(section, sd)
+        self.assertIn("wastes context", sd)
+
+    def test_overclaiming_lines_are_gone(self):
+        flat = " ".join(self.block.split())
+        for banned in (
+            "Only a full pipeline run counts as real verification",
+            "A test that would still pass if the feature were deleted is worthless",
+            "A rule that exists only as prose will be skipped",
+            "An agent will generate many small, trivial unit tests",
+        ):
+            with self.subTest(banned=banned):
+                self.assertNotIn(banned, flat)
+
+    def test_duplicate_requirements_were_consolidated(self):
+        flat = " ".join(self.block.split())
+        self.assertEqual(flat.count("component or user-visible"), 1,
+                         "end-to-end requirement should be stated once")
+        self.assertNotIn("Every rule states why it exists", self.block)
+        self.assertNotIn("never buried in", self.block)
+
+    def test_version_note_records_the_changelog(self):
+        tail = self.ref[self.ref.index("## Version"):]
+        self.assertIn("v1.1", tail)
+        self.assertIn("Change discipline promoted", tail)
+
+    def test_retrofit_reference_warns_about_the_part_1_copy(self):
+        self.assertIn("Change discipline is the live case", self.retrofit)
+
+
 if __name__ == "__main__":
     unittest.main()
 
@@ -210,21 +282,23 @@ class ProjectFoundationSkillStructureTests(unittest.TestCase):
                 self.assertIn(phrase, self.skill)
 
     def test_generated_agents_contract_is_scoped_and_safe(self):
-        marker = "When the repository will be maintained with code, include this compact implementation-discipline block"
-        start = self.skill.index(marker)
-        end = self.skill.index("Do not put the full architecture", start)
-        block = self.skill[start:end]
-        required = (
-            "## Change discipline",
+        """Change discipline moved into Part 2 in v1.1; SKILL.md routes, it must not restate."""
+        ref = (self.root / "references" / "agents-md-general-rules.md").read_text()
+        block = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->",
+                          ref, re.S).group(1)
+        flat = " ".join(block.split())
+        for phrase in (
+            "### Change discipline",
             "Before adding code or scaffolding",
             "deleting, reusing, configuring, or extending",
             "smallest complete change that satisfies the requirement",
             "Do not reduce validation",
-            "For a documentation-only or otherwise non-code project, omit this block",
-        )
-        for phrase in required:
+        ):
             with self.subTest(phrase=phrase):
-                self.assertIn(phrase, block)
+                self.assertIn(phrase, flat)
+        self.assertIn("not** a per-project block", self.skill)
+        self.assertNotIn("omit this block", self.skill,
+                         "Part 2 is identical everywhere; the per-project opt-out is gone")
 
     def test_initializer_completeness_guard_is_explicit(self):
         marker = "## Initializer completeness guard"
@@ -365,6 +439,78 @@ class ProjectFoundationRetrofitModeTests(unittest.TestCase):
         for marker in ("**creation**", "**retrofit**", "two-part `AGENTS.md`"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, self.readme)
+
+
+class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
+    """Guards the v1.1 block: promoted Change discipline, unified marker, restored PROGRESS.md."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1]
+        cls.ref = (cls.root / "skills" / "project-foundation" / "references"
+                   / "agents-md-general-rules.md").read_text()
+        cls.block = re.search(
+            r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->", cls.ref, re.S
+        ).group(1)
+        cls.skill = (cls.root / "skills" / "project-foundation" / "SKILL.md").read_text()
+        cls.retrofit = (cls.root / "skills" / "project-foundation" / "references"
+                        / "retrofit-existing-repo.md").read_text()
+
+    def test_marker_carries_version_and_warning(self):
+        marker = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->", self.ref).group(0)
+        self.assertIn("v1.1", marker)
+        self.assertIn("do not edit in place", marker)
+
+    def test_all_nine_sections_present(self):
+        present = re.findall(r"^### (.+)$", self.block, re.M)
+        self.assertEqual(
+            present,
+            ["Planning", "Testing", "End-to-end verification", "Invariants and boundaries",
+             "Change discipline", "Session discipline", "Verification errors", "Completion",
+             "Instruction hygiene"],
+        )
+
+    def test_change_discipline_lives_in_part_2_not_part_1(self):
+        self.assertIn("### Change discipline", self.block)
+        self.assertNotIn("```text\n## Change discipline", self.skill,
+                         "SKILL.md must not reintroduce the hand-copied per-project block")
+        self.assertIn("not** a per-project block", self.skill)
+
+    def test_session_discipline_names_progress_md_with_section_guidance(self):
+        sd = self.block[self.block.index("### Session discipline"):self.block.index("### Verification errors")]
+        self.assertIn("`PROGRESS.md`", sd)
+        self.assertNotIn("handoff record", sd.lower(),
+                         "'handoff record' was too vague; PROGRESS.md is the guaranteed artifact")
+        for section in ("active-work", "blockers", "verification-status", "next-move"):
+            with self.subTest(section=section):
+                self.assertIn(section, sd)
+        self.assertIn("wastes context", sd)
+
+    def test_overclaiming_lines_are_gone(self):
+        flat = " ".join(self.block.split())
+        for banned in (
+            "Only a full pipeline run counts as real verification",
+            "A test that would still pass if the feature were deleted is worthless",
+            "A rule that exists only as prose will be skipped",
+            "An agent will generate many small, trivial unit tests",
+        ):
+            with self.subTest(banned=banned):
+                self.assertNotIn(banned, flat)
+
+    def test_duplicate_requirements_were_consolidated(self):
+        flat = " ".join(self.block.split())
+        self.assertEqual(flat.count("component or user-visible"), 1,
+                         "end-to-end requirement should be stated once")
+        self.assertNotIn("Every rule states why it exists", self.block)
+        self.assertNotIn("never buried in", self.block)
+
+    def test_version_note_records_the_changelog(self):
+        tail = self.ref[self.ref.index("## Version"):]
+        self.assertIn("v1.1", tail)
+        self.assertIn("Change discipline promoted", tail)
+
+    def test_retrofit_reference_warns_about_the_part_1_copy(self):
+        self.assertIn("Change discipline is the live case", self.retrofit)
 
 
 if __name__ == "__main__":

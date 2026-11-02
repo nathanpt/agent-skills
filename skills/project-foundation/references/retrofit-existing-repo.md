@@ -214,7 +214,10 @@ carry. The file must end up in the standard shape from
 5. Live status, test counts, and work state belong in the progress document, not in
    `AGENTS.md`.
 6. Where the repository already had instructions that duplicate Part 2, the Part 1 copy is
-   removed and Part 2 is the single source.
+   removed and Part 2 is the single source. **Change discipline is the live case:** earlier
+   versions hand-copied those four bullets into Part 1 of every project. Delete the Part 1
+   copy when you apply the current block, or you reinstate exactly the duplication the
+   promotion removed.
 7. If `AGENTS.md` is deliberately gitignored (a public repository that carries no
    agent-facing files), say so in the file itself and record where the local-only
    convention is documented. An untracked file has no history to recover it from.

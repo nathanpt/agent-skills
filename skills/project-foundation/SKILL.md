@@ -336,18 +336,9 @@ Example routing entries:
 - Run the applicable verification level before marking work complete.
 ```
 
-When the repository will be maintained with code, include this compact implementation-discipline block in `AGENTS.md`:
+Change discipline is **not** a per-project block. It lives in Part 2 (see `references/agents-md-general-rules.md`) so that it is identical in every repository and cannot drift or contradict the rest of the standard. Do not also hand-copy it into Part 1 — the two copies diverge and the shared one wins.
 
-```text
-## Change discipline
-
-- Before adding code or scaffolding, inspect the relevant paths and ask whether the requested outcome can be met by deleting, reusing, configuring, or extending something already present.
-- Check existing implementations, platform facilities, standard-library functions, and installed dependencies before adding new code or dependencies.
-- Implement the smallest complete change that satisfies the requirement. Do not add speculative abstractions, generality, files, or configuration.
-- Do not reduce validation, error handling, security checks, accessibility, tests, observability, or readability merely to reduce lines.
-```
-
-For a documentation-only or otherwise non-code project, omit this block when it would add noise. Treat “smallest” as a constraint on unnecessary work, not as permission to ship an incomplete or unsafe result.
+Treat “smallest” as a constraint on unnecessary work, not as permission to ship an incomplete or unsafe result.
 
 Do not put the full architecture, historical incident log, every preference, or every topic rule into `AGENTS.md`.
 

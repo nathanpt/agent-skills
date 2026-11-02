@@ -38,104 +38,110 @@ Only two things may differ in Part 2:
    assistant emits it by accident. It is a canary: if the first line stops appearing,
    the file's rules are being dropped. When that happens, ask for a handoff note and
    start a fresh session.
-2. **Nothing else.** Version markers, if present, are updated as a set.
+2. **Nothing else.** The marker line carries the version and the do-not-edit warning, and
+   must match this file exactly, including that warning.
 
 Adjust a rule only by making it **stronger or more specific** — never weaker, and never
 silently omitted.
 
 ## The block
 
-Everything between the markers is Part 2. Reproduce it byte for byte.
+Everything between the markers is Part 2. Reproduce it byte for byte, marker included.
 
 ```markdown
-<!-- BEGIN STANDARD RULES v1.0 -->
+<!-- BEGIN STANDARD RULES v1.1 — identical across all projects; do not edit in place -->
 ### Planning
 
 Before writing code, state the plan abstractly: what the system does, which
 boundaries the change crosses, what data moves and in which direction, and what
-would prove the change works. Solve the general problem before the specific
-case. Do not enumerate implementation steps as a substitute for understanding
-the shape of the problem.
+would prove the change works. Do not enumerate implementation steps as a
+substitute for understanding the shape of the problem.
 
-Take on one unit of work at a time. Do not attempt to one-shot a multi-part task;
-half-finished work left behind is worse than unstarted work.
+Do not attempt to one-shot a multi-part task; half-finished work left behind is
+worse than unstarted work.
 
 ### Testing
 
-Tests exist to catch regressions, not to raise a coverage number. An agent will
-generate many small, trivial unit tests that assert implementation details and
-prove nothing; refuse that.
+Tests exist to catch regressions, not to raise a coverage number.
 
-- Prefer a small number of high-value tests over a large number of shallow ones.
-- Every test names the regression it catches in its name or its message.
-- Do not test internals, private helpers, framework behavior, or constants.
+- A test added to verify new behavior must fail when that behavior is absent.
+- Every test names the behavior or regression it protects, in its name or its
+  message.
+- Prefer observable-behavior tests; test internal logic, private helpers, or
+  framework interaction when they carry a specific correctness risk.
 - Do not mock away the behavior under test.
-- For cross-component or user-visible changes, unit tests are necessary but
-  insufficient: the change is not verified until the real path runs end to end.
-- A test that would still pass if the feature were deleted is worthless.
 
 ### End-to-end verification
 
-Only a full pipeline run counts as real verification. Unit tests are
-systematically blind to component-boundary defects: interface mismatches, state
-propagation, resource lifecycle, and environment differences all survive a green
-unit suite.
+Unit tests are systematically blind to component-boundary defects: interface
+mismatches, state propagation, resource lifecycle, and environment differences
+all survive a green unit suite.
 
-- Level 1: unit tests (must pass)
-- Level 2: integration tests (must pass)
-- Level 3: end-to-end run through the real system (must pass whenever the change
-  crosses a boundary)
-- Skipping a required level means **not complete**, and is reported as
-  `unverified`, never as passing.
-- Record the exact command and the observed result. "Should work" is not
-  evidence.
-- Before starting new work, confirm the existing baseline still works. Finding
-  out the project was already broken is cheaper than adding to a broken base.
+Run the checks the project defines for the change: unit, then integration, then
+end-to-end through the real system when the change crosses a component or
+user-visible boundary.
+
+Record the exact command and the observed result. "Should work" is not evidence.
 
 ### Invariants and boundaries
 
-- Enforce invariants, not implementations. Control boundaries, data shapes, and
-  dependency direction; leave the internals to the implementer.
+- Control boundaries, data shapes, and dependency direction; leave the internals
+  to the implementer.
 - Parse data at the boundary. Never build on a guessed shape from an external
   system, an untyped payload, or a library's undocumented behavior.
-- When a rule actually matters, encode it as a test or a lint with a fix-oriented
-  error message. A rule that exists only as prose will be skipped.
+- Encode mechanically checkable invariants in tests or lint rules, with
+  actionable failure messages.
 - Follow the best pattern already in the repository, not merely the nearest one.
   Agents copy whatever they see first, including the bad example.
 
+### Change discipline
+
+- Before adding code or scaffolding, inspect the relevant paths and ask whether
+  the requested outcome can be met by deleting, reusing, configuring, or
+  extending something already present.
+- Check existing implementations, platform facilities, standard-library
+  functions, and installed dependencies before adding new code or dependencies.
+- Implement the smallest complete change that satisfies the requirement. Do not
+  add speculative abstractions, generality, files, or configuration.
+- Do not reduce validation, error handling, security checks, accessibility,
+  tests, observability, or readability merely to reduce lines.
+
 ### Session discipline
 
-- Start by reading the progress file and the recent git log, then verify the
-  baseline. Do not begin by writing code.
-- Work one feature at a time, selected from the feature list.
-- Only a passing verification moves a feature to done. Never edit the feature
-  list, weaken a requirement, or delete a test to make progress look better.
-- End the session in a clean state: commit the work and update the progress file
-  so the next session does not have to guess what happened.
+- Start by reading `PROGRESS.md` — the active-work, blockers, verification-status,
+  and next-move sections, not the whole file — then the recent git log. Reading
+  the entire file wastes context; read the sections that decide what to do now.
+- Then run the baseline checks and record any pre-existing failures. Do not begin
+  by writing code.
+- Work on one bounded unit at a time, selected from the feature list when the
+  project has one.
+- Only a passing verification moves a feature to done. Never weaken acceptance
+  criteria or delete a test to make progress look better.
+- At handoff, record what changed, the verification results, and what is
+  unfinished in the progress file. Commit only when the project workflow or the
+  user asks for it.
 
 ### Verification errors
 
-Failure messages must state what failed, why it matters, and how to fix it. An
-error that says only what broke, without the fix, wastes a session.
+Failure reports state what failed, its impact, and either a known fix or the next
+diagnostic step. Label uncertain causes rather than inventing a remedy.
 
 ### Completion
 
 Never report work as complete, done, passing, or shipped on the strength of code
-that was not executed. Distinguish implemented from verified. State what remains
-unverified and what evidence would close it.
+that was not executed. Distinguish implemented from verified. Report complete or
+passing only when the applicable required checks have run and passed; otherwise
+state what remains unverified and what evidence would close it.
 
 End any turn that reports on long-running or delegated work with a short status: **Goal**, **Done**, **Next**, **Needs you** (or "nothing").
 
 ### Instruction hygiene
 
-This file is a router, not an encyclopedia. Keep it under roughly 200 lines and
-its hard constraints under 15.
+Keep AGENTS.md a short router to topic documents: check the combined Part 1 and
+Part 2 against the roughly 200-line budget, with hard constraints under 15.
 
 - A new rule goes into a topic document unless it is a genuine red line.
-- Every rule states why it exists and when it can be removed.
 - Do not restate what the code, types, or config already say.
-- Critical rules belong at the top or the bottom of this file — never buried in
-  the middle, where they get lost.
 <!-- END STANDARD RULES -->
 ```
 
@@ -143,13 +149,52 @@ its hard constraints under 15.
 
 - Line 1 is the canary, above every heading.
 - `## Part 1 — Project` and `## Part 2 — Standard rules (all projects)` both exist.
+- The marker line matches this file exactly, including the do-not-edit warning.
 - The block is byte-identical to this file — diff it rather than eyeballing it.
+- All nine sections are present: Planning, Testing, End-to-end verification, Invariants
+  and boundaries, Change discipline, Session discipline, Verification errors, Completion,
+  Instruction hygiene.
 - Total length stays near 200 lines and hard constraints under 15 (instruction hygiene).
 - Project-specific commands, boundaries, and constraints are all in Part 1, not scattered
   into Part 2.
 
+## Applying an update to an existing project
+
+Part 2 changed, so a project on an older version needs two edits, not one:
+
+1. Replace everything between the markers with the current block.
+2. **Delete any rule that now lives in Part 2 from Part 1.** Change discipline is the
+   current case: earlier versions hand-copied those four bullets into Part 1 of every
+   project. Leaving the copy in place recreates the duplication the promotion removed,
+   and the two copies will drift.
+
 ## Version
 
-**v1.0** — 2026-11-01. Rule content: abstract planning, regression-focused testing,
-end-to-end verification, invariants and boundaries, session discipline, fix-oriented
-verification errors, completion honesty with a status footer, instruction hygiene.
+**v1.1** — 2026-11-01. Nine sections, 92 lines, 651 words.
+
+Changed from v1.0 (87 lines, 684 words):
+
+- **Change discipline promoted from Part 1 into Part 2.** The four bullets were
+  hand-copied into every project's Part 1, where they drifted and contradicted Part 2.
+  They now have one home. A project gains ~5 lines in Part 2 and loses 6–11 from Part 1
+  when the copy is removed, so consolidation is roughly neutral on line count — the gain
+  is a single source of truth, not brevity.
+- **Removed the overbroad "Only a full pipeline run counts as real verification."** The
+  block's own level ladder contradicted it five lines later; an agent obeying it literally
+  would run the whole pipeline for a one-line rename.
+- **Collapsed three duplicate statements of end-to-end verification into one.**
+- **Scoped the "worthless test" line** so it no longer condemns existing-behaviour
+  regression tests, and **softened the blanket ban on testing internals.**
+- **Deleted two unfalsifiable predictions** ("an agent will generate many small, trivial
+  unit tests", "a rule that exists only as prose will be skipped").
+- **Fixed a self-contradiction in session discipline:** "never edit the feature list"
+  blocked the update the preceding sentence requires.
+- **Restored an explicit `PROGRESS.md` instruction** with section-level reading guidance,
+  so an agent skims the four sections that decide what to do next instead of loading the
+  whole file.
+- **Made commits conditional** on the project workflow or the user asking, rather than
+  unconditional.
+- **Cut two instruction-hygiene bullets** addressed to the file's maintainer rather than
+  the agent reading it.
+- **Unified the version marker** with the do-not-edit warning that project copies already
+  carried.
