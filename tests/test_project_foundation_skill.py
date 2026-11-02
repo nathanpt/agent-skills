@@ -367,5 +367,61 @@ class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
         self.assertIn("Change discipline is the live case", self.retrofit)
 
 
+class ProjectFoundationInvocationScopeTests(unittest.TestCase):
+    """The skill must not compete for automatic selection, and must say so if opened anyway."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1] / "skills" / "project-foundation"
+        cls.skill = (cls.root / "SKILL.md").read_text()
+        end = cls.skill.find("\n---\n", 4)
+        cls.frontmatter = cls.skill[4:end]
+        match = re.search(r"^description: (.+)$", cls.frontmatter, re.MULTILINE)
+        cls.description = match.group(1) if match else ""
+        cls.gate = cls.skill[
+            cls.skill.index("## Stop gate") : cls.skill.index("## Choose the mode first")
+        ]
+        cls.when_to_use = cls.skill[
+            cls.skill.index("## When to use") : cls.skill.index("## Foundation tiers")
+        ]
+
+    def test_model_invocation_is_disabled(self):
+        self.assertIn(
+            "disable-model-invocation: true",
+            self.frontmatter,
+            "skill must not compete for automatic selection",
+        )
+
+    def test_description_names_the_artifact_not_generic_task_nouns(self):
+        self.assertIn("AGENTS.md", self.description)
+        self.assertIn("not feature plans", self.description)
+        for generic in ("docs, plans", "context, docs"):
+            with self.subTest(generic=generic):
+                self.assertNotIn(generic, self.description)
+
+    def test_stop_gate_precedes_the_procedure(self):
+        self.assertLess(
+            self.skill.index("## Stop gate"), self.skill.index("## Choose the mode first")
+        )
+        self.assertLess(self.skill.index("## Stop gate"), self.skill.index("## Procedure"))
+
+    def test_stop_gate_closes_the_skill_for_feature_work(self):
+        for phrase in (
+            "plan, design, implement, debug, refactor, review, or document a feature",
+            "overrides the gate",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.gate)
+
+    def test_trigger_list_is_state_based_not_project_property(self):
+        for banned in (
+            "a project expected to span multiple sessions",
+            "multiple user-visible requirements that need explicit scope",
+            "or verification need durable homes",
+        ):
+            with self.subTest(banned=banned):
+                self.assertNotIn(banned, self.when_to_use)
+
+
 if __name__ == "__main__":
     unittest.main()
