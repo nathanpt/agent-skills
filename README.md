@@ -32,6 +32,14 @@ Both modes produce the same artifact — a two-part `AGENTS.md` whose Part 1 des
 
 Retrofit mode is designed to prevent the failure modes that turn a bootstrap into a regression: case-variant duplicates such as `AGENTS.md` and `agents.md`, architecture documents that restate a stronger existing reference, stale pass or fail counts copied from old instructions, edits inside generator-owned sections, and wasteful subagent fan-out that re-derives known context.
 
+### `durable-notes`
+
+Defines what a note must contain to stay useful after the session that produced it ends, and nothing about where it lives. The contract covers the note body, a metadata ladder with provenance first-class, and seven invariants — no invented sources or timestamps, one idea per note, the title states the idea rather than its source, verify before asserting, state what could not be read, supersede rather than leave two live answers, and a durability gate.
+
+Filing is treated as an adaptor, not a rule: destination scheme, type vocabulary, body labels, provenance shape, and whether an index, log, or validator exists are all read from the environment first, with documented fallbacks only when it declares none. Two collections using the same numbering idea differently is a normal case, not a divergence to reconcile.
+
+Derived from Open Knowledge Format v0.2 and Johnny.Decimal, and extracted from working practice rather than invented; `references/source-index.md` records what was borrowed and what was deliberately left out.
+
 ## Install for OMP
 
 ```bash
@@ -43,6 +51,7 @@ cp -R agent-skills/skills/debug ~/.omp/agent/skills/
 cp -R agent-skills/skills/handoff ~/.omp/agent/skills/
 cp -R agent-skills/skills/grill-me ~/.omp/agent/skills/
 cp -R agent-skills/skills/adr-red-team ~/.omp/agent/skills/
+cp -R agent-skills/skills/durable-notes ~/.omp/agent/skills/
 ```
 
 Invoke it explicitly:
@@ -54,6 +63,7 @@ Invoke it explicitly:
 /skill:handoff
 /skill:grill-me
 /skill:adr-red-team
+/skill:durable-notes
 ```
 
 ## Repository layout
@@ -112,6 +122,11 @@ skills/
     templates/
       adr-red-team-agent.md
       model-role-reviewer.yml
+  durable-notes/
+    SKILL.md
+    references/
+      defaults.md
+      source-index.md
 ```
 
 ## Reference policy
