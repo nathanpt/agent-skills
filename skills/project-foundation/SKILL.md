@@ -225,7 +225,7 @@ It should contain only:
 
 1. Project overview.
 2. Quick-start/setup/test/check commands.
-3. A small prioritized set of global hard constraints — **including the five mandatory rules below**.
+3. A small prioritized set of global hard constraints — **including the mandatory rules in Part 2**.
 4. Links to topic documents with applicability conditions.
 5. Completion and reporting requirements.
 
@@ -246,101 +246,19 @@ operator's own form of address and never leave a placeholder.
 
 #### Mandatory `AGENTS.md` rules
 
-These rules are **required, verbatim, in every generated `AGENTS.md`**, above the project's own constraints. Do not paraphrase them, summarize them into one bullet, or drop any because they seem redundant with the rest of the skill. Their purpose is to be read by an agent that has not loaded this skill.
+The block is **not reproduced here**. It lives in exactly one place —
+[`references/agents-md-general-rules.md`](references/agents-md-general-rules.md) — and every
+generated file copies it from there, byte for byte, markers included.
 
-Three of them are **reply-protocol settings that must be parameterized per project**: the operator's form of address, and the status footer. Fill them in when writing the file; never leave a placeholder.
+Do not paste a hand-copied copy of the block into this skill, into a project's Part 1, into a
+retrofit report, or into a summary. A second copy is how the two diverge: this file previously
+carried its own copy, that copy fell a version behind the canonical block, and an agent
+following this file top to bottom would have written retired rules into a new `AGENTS.md`. The
+canonical file is the only source of truth for Part 2.
 
-```markdown
-Start every reply with "Skipper,". No exceptions.
-
-## Planning
-
-Before writing code, state the plan abstractly: what the system does, which
-boundaries the change crosses, what data moves and in which direction, and what
-would prove the change works. Solve the general problem before the specific
-case. Do not enumerate implementation steps as a substitute for understanding
-the shape of the problem.
-
-Take on one unit of work at a time. Do not attempt to one-shot a multi-part task;
-half-finished work left behind is worse than unstarted work.
-
-## Testing
-
-Tests exist to catch regressions, not to raise a coverage number. An agent will
-generate many small, trivial unit tests that assert implementation details and
-prove nothing; refuse that.
-
-- Prefer a small number of high-value tests over a large number of shallow ones.
-- Every test names the regression it catches in its name or its message.
-- Do not test internals, private helpers, framework behavior, or constants.
-- Do not mock away the behavior under test.
-- For cross-component or user-visible changes, unit tests are necessary but
-  insufficient: the change is not verified until the real path runs end to end.
-- A test that would still pass if the feature were deleted is worthless.
-
-## End-to-end verification
-
-Only a full pipeline run counts as real verification. Unit tests are
-systematically blind to component-boundary defects: interface mismatches, state
-propagation, resource lifecycle, and environment differences all survive a green
-unit suite.
-
-- Level 1: unit tests (must pass)
-- Level 2: integration tests (must pass)
-- Level 3: end-to-end run through the real system (must pass whenever the change
-  crosses a boundary)
-- Skipping a required level means **not complete**, and is reported as
-  `unverified`, never as passing.
-- Record the exact command and the observed result. "Should work" is not
-  evidence.
-- Before starting new work, confirm the existing baseline still works. Finding
-  out the project was already broken is cheaper than adding to a broken base.
-
-## Invariants and boundaries
-
-- Enforce invariants, not implementations. Control boundaries, data shapes, and
-  dependency direction; leave the internals to the implementer.
-- Parse data at the boundary. Never build on a guessed shape from an external
-  system, an untyped payload, or a library's undocumented behavior.
-- When a rule actually matters, encode it as a test or a lint with a fix-oriented
-  error message. A rule that exists only as prose will be skipped.
-- Follow the best pattern already in the repository, not merely the nearest one.
-  Agents copy whatever they see first, including the bad example.
-
-## Session discipline
-
-- Start by reading the progress file and the recent git log, then verify the
-  baseline. Do not begin by writing code.
-- Work one feature at a time, selected from the feature list.
-- Only a passing verification moves a feature to done. Never edit the feature
-  list, weaken a requirement, or delete a test to make progress look better.
-- End the session in a clean state: commit the work and update the progress file
-  so the next session does not have to guess what happened.
-
-## Verification errors
-
-Failure messages must state what failed, why it matters, and how to fix it. An
-error that says only what broke, without the fix, wastes a session.
-
-## Completion
-
-Never report work as complete, done, passing, or shipped on the strength of code
-that was not executed. Distinguish implemented from verified. State what remains
-unverified and what evidence would close it.
-
-End any turn that reports on long-running or delegated work with a short status: **Goal**, **Done**, **Next**, **Needs you** (or "nothing").
-
-## Instruction hygiene
-
-This file is a router, not an encyclopedia. Keep it under roughly 200 lines and
-its hard constraints under 15.
-
-- A new rule goes into a topic document unless it is a genuine red line.
-- Every rule states why it exists and when it can be removed.
-- Do not restate what the code, types, or config already say.
-- Critical rules belong at the top or the bottom of this file — never buried in
-  the middle, where they get lost.
-```
+The block carries nine sections and exactly two per-project substitutions: the reply-protocol
+canary on line 1, and the status footer under Completion. Fill both in when writing the file;
+never leave a placeholder.
 
 **Choosing the form of address.** Pick a single distinctive token that is personal to the operator and not one of their legal or common names — something no generic assistant would emit by accident. It functions as a canary: if the first line stops appearing, the file's rules are being dropped. When the agent stops using it, ask for a handoff note and start a fresh session:
 

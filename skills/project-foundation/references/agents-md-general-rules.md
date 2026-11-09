@@ -49,7 +49,7 @@ silently omitted.
 Everything between the markers is Part 2. Reproduce it byte for byte, marker included.
 
 ```markdown
-<!-- BEGIN STANDARD RULES v1.1 — identical across all projects; do not edit in place -->
+<!-- BEGIN STANDARD RULES v1.2 — identical across all projects; do not edit in place -->
 ### Planning
 
 Before writing code, state the plan abstractly: what the system does, which
@@ -120,6 +120,13 @@ Record the exact command and the observed result. "Should work" is not evidence.
 - At handoff, record what changed, the verification results, and what is
   unfinished in the progress file. Commit only when the project workflow or the
   user asks for it.
+- Before handoff, list what the change made untrue and update every document
+  that describes it — module maps, invariants, contracts, verification
+  baselines. A routed document must never describe retired behavior or a
+  superseded baseline.
+- If `CHANGELOG.md` exists, add each user-visible change to `## Unreleased`
+  under Added, Changed, or Fixed in the same session. Set versions and dates
+  only at release; never edit an entry that has shipped.
 
 ### Verification errors
 
@@ -133,7 +140,7 @@ that was not executed. Distinguish implemented from verified. Report complete or
 passing only when the applicable required checks have run and passed; otherwise
 state what remains unverified and what evidence would close it.
 
-End any turn that reports on long-running or delegated work with a short status: **Goal**, **Done**, **Next**, **Needs you** (or "nothing").
+End any turn that reports on long-running or delegated work with a short status: **Goal**, **Done**, **Next**, **Docs**, **Needs you** (or "nothing"). **Docs** names the routed documents this change updated, or states that no routed document describes it.
 
 ### Instruction hygiene
 
@@ -154,6 +161,7 @@ Part 2 against the roughly 200-line budget, with hard constraints under 15.
 - All nine sections are present: Planning, Testing, End-to-end verification, Invariants
   and boundaries, Change discipline, Session discipline, Verification errors, Completion,
   Instruction hygiene.
+- The Completion status footer carries all five fields, including **Docs**.
 - Total length stays near 200 lines and hard constraints under 15 (instruction hygiene).
 - Project-specific commands, boundaries, and constraints are all in Part 1, not scattered
   into Part 2.
@@ -164,11 +172,38 @@ Part 2 changed, so a project on an older version needs two edits, not one:
 
 1. Replace everything between the markers with the current block.
 2. **Delete any rule that now lives in Part 2 from Part 1.** Change discipline is the
-   current case: earlier versions hand-copied those four bullets into Part 1 of every
+   v1.1 case: earlier versions hand-copied those four bullets into Part 1 of every
    project. Leaving the copy in place recreates the duplication the promotion removed,
-   and the two copies will drift.
+   and the two copies will drift. The document-refresh and `CHANGELOG.md` rules are the
+   v1.2 case: any project that already states them in Part 1 (as a "keep ARCHITECTURE
+   fresh" or "maintain CHANGELOG" hard constraint) deletes those lines rather than
+   carrying both.
+3. **Check the status footer.** A footer missing **Docs** is a pre-v1.2 file even if
+   every other line matches.
 
 ## Version
+
+**v1.2** — 2026-11-09. Nine sections, 99 lines, 737 words.
+
+Changed from v1.1 (92 lines, 651 words):
+
+- **Two session-discipline rules for documents a change makes untrue.** v1.1 required
+  reading a routed topic document before changing its subject but never required updating
+  it afterwards, and never mentioned `CHANGELOG.md` at all. An agent following v1.1 exactly
+  could hand off a correct diff whose architecture document still described a retired
+  algorithm and whose changelog had no entry, and would have been compliant. Both rules
+  are change-time process, which is Session discipline's job, and both are gated on the
+  artifact existing so a Minimal-tier project without a `CHANGELOG.md` incurs no
+  unsatisfiable obligation.
+- **Added `Docs` to the status footer.** The two rules above are prose an agent has to
+  remember; that is the mechanism that already failed. The footer field makes the answer
+  visible in every handoff and checkable by the operator without a hook — the same
+  observable-canary approach as the reply protocol, which is the one enforcement pattern
+  this block already trusts.
+- **Changelog categories held to Added / Changed / Fixed.** A project needing `Removed`,
+  `Deprecated`, or `Security` names them in Part 1 rather than widening the shared block;
+  three categories already cover every user-visible change, and a longer taxonomy invites
+  each repo to pick a different subset.
 
 **v1.1** — 2026-11-01. Nine sections, 92 lines, 651 words.
 
