@@ -217,7 +217,9 @@ carry. The file must end up in the standard shape from
    removed and Part 2 is the single source. **Change discipline is the live case:** earlier
    versions hand-copied those four bullets into Part 1 of every project. Delete the Part 1
    copy when you apply the current block, or you reinstate exactly the duplication the
-   promotion removed.
+   promotion removed. The same applies to any Part 1 constraint requiring the architecture
+   document to stay fresh or `CHANGELOG.md` to be maintained: both rules are in Part 2 from
+   v1.2 and the Part 1 copy goes.
 7. If `AGENTS.md` is deliberately gitignored (a public repository that carries no
    agent-facing files), say so in the file itself and record where the local-only
    convention is documented. An untracked file has no history to recover it from.

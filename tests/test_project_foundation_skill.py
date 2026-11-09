@@ -3,11 +3,17 @@ import re
 import unittest
 
 
-class ProjectFoundationMandatoryRulesTests(unittest.TestCase):
+class ProjectFoundationStandardRulesRouteTests(unittest.TestCase):
+    """SKILL.md routes to the canonical block; it must never carry a second copy of it."""
+
     @classmethod
     def setUpClass(cls):
         cls.root = Path(__file__).parents[1] / "skills" / "project-foundation"
         cls.skill = (cls.root / "SKILL.md").read_text()
+        cls.ref = (cls.root / "references" / "agents-md-general-rules.md").read_text()
+        cls.block = re.search(
+            r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->", cls.ref, re.S
+        ).group(1)
 
     def test_frontmatter_and_size(self):
         self.assertTrue(self.skill.startswith("---\n"))
@@ -20,57 +26,58 @@ class ProjectFoundationMandatoryRulesTests(unittest.TestCase):
             self.fail("description frontmatter is missing")
         self.assertTrue(match.group(1).endswith("."))
 
+    def test_skill_routes_to_the_canonical_block(self):
+        for phrase in (
+            "references/agents-md-general-rules.md",
+            "The block is **not reproduced here**",
+            "only source of truth for Part 2",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.skill)
+
+    def test_skill_does_not_embed_a_second_copy_of_the_block(self):
+        self.assertNotIn("<!-- BEGIN STANDARD RULES", self.skill,
+                         "the block lives in references/, not in the router")
+        for heading in ("### Planning", "### Testing", "### Session discipline",
+                        "### Instruction hygiene"):
+            with self.subTest(heading=heading):
+                self.assertNotIn(heading, self.skill)
+
     def test_reply_protocol_canary(self):
-        required = (
-            'Start every reply with "',
-            "No exceptions.",
+        for phrase in ('Start every reply with "', "No exceptions."):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.ref)
+        for phrase in (
             "functions as a canary",
             "Write a handoff note for a fresh session",
             "not left as `[your name]`",
-        )
-        for phrase in required:
+        ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, self.skill)
 
-    def test_status_footer(self):
-        for phrase in ("**Goal**", "**Done**", "**Next**", '**Needs you** (or "nothing")'):
+    def test_status_footer_carries_docs(self):
+        for phrase in ("**Goal**", "**Done**", "**Next**", "**Docs**",
+                       '**Needs you** (or "nothing")'):
             with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.skill)
+                self.assertIn(phrase, self.block)
 
-    def test_agents_md_rules_are_required_verbatim(self):
-        required = (
-            "Mandatory `AGENTS.md` rules",
-            "required, verbatim, in every generated `AGENTS.md`",
-            "## Planning",
+    def test_block_carries_the_mandatory_rules(self):
+        flat = " ".join(self.block.split())
+        for phrase in (
             "state the plan abstractly",
-            "Solve the general problem before the specific",
-            "Take on one unit of work at a time",
-            "## Testing",
-            "not to raise a coverage number",
-            "Every test names the regression it catches",
-            "A test that would still pass if the feature were deleted is worthless",
-            "## End-to-end verification",
-            "Only a full pipeline run counts as real verification",
-            "must pass whenever the change",
-            "confirm the existing baseline still works",
-            "## Invariants and boundaries",
-            "Enforce invariants, not implementations",
-            "Parse data at the boundary",
-            "encode it as a test or a lint",
+            "Do not attempt to one-shot a multi-part task",
+            "Tests exist to catch regressions",
+            "A test added to verify new behavior must fail when that behavior is absent",
+            "Run the checks the project defines for the change",
             "Follow the best pattern already in the repository",
-            "## Session discipline",
-            "Only a passing verification moves a feature to done",
-            "## Verification errors",
-            "how to fix it",
-            "## Completion",
+            "Before adding code or scaffolding",
+            "Before handoff, list what the change made untrue",
+            "Failure reports state what failed",
             "Distinguish implemented from verified",
-            "## Instruction hygiene",
-            "router, not an encyclopedia",
-            "never buried in",
-        )
-        for phrase in required:
+            "Keep AGENTS.md a short router to topic documents",
+        ):
             with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.skill)
+                self.assertIn(phrase, flat)
 
     def test_thin_unit_test_suppression_is_stated(self):
         required = (
@@ -92,9 +99,10 @@ class ProjectFoundationMandatoryRulesTests(unittest.TestCase):
         self.assertIn("reply-protocol placeholder", completion)
 
     def test_mandatory_block_has_no_unfilled_placeholder(self):
-        block = self.skill.split("#### Mandatory `AGENTS.md` rules", 1)[1]
-        block = block.split("**Choosing the form of address.**", 1)[0]
-        self.assertNotIn("[your name]", block)
+        self.assertNotIn("[your name]", self.block)
+        self.assertNotIn("Skipper", self.block,
+                         "the canary is per-operator; the block itself carries no name")
+        self.assertIn("<OPERATOR>", self.ref)
 
     def test_references_exist(self):
         for reference in re.findall(r"`(references/[^`]+\.md)`", self.skill):
@@ -311,8 +319,8 @@ class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
                         / "retrofit-existing-repo.md").read_text()
 
     def test_marker_carries_version_and_warning(self):
-        marker = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->", self.ref).group(0)
-        self.assertIn("v1.1", marker)
+        marker = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->\s*", self.ref).group(0)
+        self.assertIn("v1.2", marker)
         self.assertIn("do not edit in place", marker)
 
     def test_all_nine_sections_present(self):
@@ -360,11 +368,86 @@ class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
 
     def test_version_note_records_the_changelog(self):
         tail = self.ref[self.ref.index("## Version"):]
+        self.assertIn("v1.2", tail)
         self.assertIn("v1.1", tail)
         self.assertIn("Change discipline promoted", tail)
 
     def test_retrofit_reference_warns_about_the_part_1_copy(self):
         self.assertIn("Change discipline is the live case", self.retrofit)
+
+
+class ProjectFoundationStandardRulesV12Tests(unittest.TestCase):
+    """Guards the v1.2 block: documents a change makes untrue, gated changelog, Docs footer."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1]
+        cls.ref = (cls.root / "skills" / "project-foundation" / "references"
+                   / "agents-md-general-rules.md").read_text()
+        cls.block = re.search(
+            r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->", cls.ref, re.S
+        ).group(1)
+
+    def slice(self, start, end=None):
+        head = self.block.index(start)
+        return self.block[head:self.block.index(end)] if end else self.block[head:]
+
+    def test_documents_a_change_makes_untrue_must_be_updated(self):
+        session = self.slice("### Session discipline", "### Verification errors")
+        for phrase in (
+            "what the change made untrue",
+            "module maps, invariants, contracts",
+            "retired behavior",
+            "superseded baseline",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, session)
+
+    def test_document_refresh_is_change_time_process_not_topic_content(self):
+        self.assertIn("Before handoff", self.slice("### Session discipline", "### Verification errors"))
+        self.assertNotIn("what the change made untrue", self.slice("### Instruction hygiene"))
+        self.assertNotIn(
+            "what the change made untrue",
+            self.slice("### Change discipline", "### Session discipline"),
+        )
+
+    def test_changelog_rule_is_gated_on_the_file_existing(self):
+        session = self.slice("### Session discipline")
+        self.assertIn("If `CHANGELOG.md` exists", session,
+                      "a Minimal-tier project without a CHANGELOG.md must not inherit an "
+                      "unsatisfiable obligation")
+        self.assertIn("## Unreleased", session)
+
+    def test_changelog_taxonomy_stays_minimal(self):
+        session = self.slice("### Session discipline")
+        for category in ("Added", "Changed", "Fixed"):
+            with self.subTest(category=category):
+                self.assertIn(category, session)
+        self.assertNotIn("Performance", self.block,
+                         "Performance is a project-local heading, not a shared category")
+        for widened in ("Deprecated", "Security"):
+            with self.subTest(widened=widened):
+                self.assertNotIn(widened, self.block)
+
+    def test_version_dating_is_deferred_to_release(self):
+        session = self.slice("### Session discipline")
+        self.assertIn("only at release", session)
+        self.assertIn("never edit an entry that has shipped", session)
+
+    def test_status_footer_docs_field_is_observable(self):
+        completion = self.slice("### Completion")
+        self.assertIn("**Docs**", completion)
+        self.assertIn("no routed document describes it", completion)
+
+    def test_nine_sections_and_budget_are_unchanged(self):
+        self.assertEqual(len(re.findall(r"^### ", self.block, re.M)), 9)
+        self.assertLessEqual(len(self.block.splitlines()), 100)
+
+    def test_the_skill_still_routes_and_does_not_restate(self):
+        skill = (self.root / "skills" / "project-foundation" / "SKILL.md").read_text()
+        self.assertNotIn("<!-- BEGIN STANDARD RULES", skill)
+        self.assertIn("not** a per-project block", skill)
+
 
 
 class ProjectFoundationInvocationScopeTests(unittest.TestCase):
