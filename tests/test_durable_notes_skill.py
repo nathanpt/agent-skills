@@ -47,20 +47,33 @@ class DurableNotesContractTests(unittest.TestCase):
         )
 
     def test_no_environment_specific_paths(self):
-        for leak in ("/home/", "40_Knowledge", "90_System", "_index/",
-                     "validate_okf", ".docs/", "Obsidian/", "obsidian/"):
-            with self.subTest(leak=leak):
-                self.assertNotIn(leak, self.skill)
-                self.assertNotIn(leak, self.defaults)
+        """Portability, asserted generically: naming one environment's paths would publish them."""
+        patterns = (
+            (r"/home/", "an absolute home path"),
+            (r"/Users/", "an absolute home path"),
+            (r"[A-Za-z]:\\\\", "a drive-letter path"),
+            (r"\b\d{2}_[A-Za-z]", "a numbered-folder convention"),
+            (r"python3?\s+\S+\.py", "a concrete validator command"),
+        )
+        for text, label in ((self.skill, "SKILL.md"), (self.defaults, "defaults.md")):
+            for pattern, description in patterns:
+                with self.subTest(file=label, pattern=description):
+                    self.assertIsNone(
+                        re.search(pattern, text),
+                        f"{label} contains {description}; the contract must not name any one "
+                        "environment's layout",
+                    )
 
     def test_does_not_impose_a_type_vocabulary(self):
-        for vocabulary_value in ("`concept`", "`procedure`", "`evaluation`",
-                                 "`tooling`", "`research`", "`decision`"):
-            with self.subTest(value=vocabulary_value):
-                self.assertNotIn(vocabulary_value, self.skill)
+        """No value list may be attached to `type`; naming one would export a private vocabulary."""
+        self.assertIn("omit `type` and say why", self.flat)
+        self.assertIsNone(
+            re.search(r"`type`[^\n]*(?:`[a-z-]+`,\s*){2,}", self.skill),
+            "SKILL.md enumerates candidate `type` values; the vocabulary belongs to the environment",
+        )
+        self.assertNotIn("canonical", self.skill.lower())
         self.assertIn("do not carry one environment's vocabulary into another",
                       " ".join(self.defaults.split()).lower())
-        self.assertIn("omit `type` and say why", self.flat)
 
     def test_profile_handshake_names_five_surfaces(self):
         handshake = self.skill[self.skill.index("## 0."):self.skill.index("## 1.")]
