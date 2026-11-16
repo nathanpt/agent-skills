@@ -219,7 +219,10 @@ carry. The file must end up in the standard shape from
    copy when you apply the current block, or you reinstate exactly the duplication the
    promotion removed. The same applies to any Part 1 constraint requiring the architecture
    document to stay fresh or `CHANGELOG.md` to be maintained: both rules are in Part 2 from
-   v1.2 and the Part 1 copy goes.
+   v1.2 and the Part 1 copy goes. The v1.3 case is the handoff bullet: it now names
+   `docs/exec-plans/completed/` as the destination for a finished unit's detail, so a
+   retrofit must create and populate that directory rather than leaving the file as the
+   only place evidence can land.
 7. If `AGENTS.md` is deliberately gitignored (a public repository that carries no
    agent-facing files), say so in the file itself and record where the local-only
    convention is documented. An untracked file has no history to recover it from.

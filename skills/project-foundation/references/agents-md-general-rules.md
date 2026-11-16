@@ -49,7 +49,7 @@ silently omitted.
 Everything between the markers is Part 2. Reproduce it byte for byte, marker included.
 
 ```markdown
-<!-- BEGIN STANDARD RULES v1.2 — identical across all projects; do not edit in place -->
+<!-- BEGIN STANDARD RULES v1.3 — identical across all projects; do not edit in place -->
 ### Planning
 
 Before writing code, state the plan abstractly: what the system does, which
@@ -118,8 +118,9 @@ Record the exact command and the observed result. "Should work" is not evidence.
 - Only a passing verification moves a feature to done. Never weaken acceptance
   criteria or delete a test to make progress look better.
 - At handoff, record what changed, the verification results, and what is
-  unfinished in the progress file. Commit only when the project workflow or the
-  user asks for it.
+  unfinished in the progress file; a finished unit leaves one line there and its
+  detail in `docs/exec-plans/completed/`. Commit only when the project workflow or
+  the user asks for it.
 - Before handoff, list what the change made untrue and update every document
   that describes it — module maps, invariants, contracts, verification
   baselines. A routed document must never describe retired behavior or a
@@ -180,8 +181,31 @@ Part 2 changed, so a project on an older version needs two edits, not one:
    carrying both.
 3. **Check the status footer.** A footer missing **Docs** is a pre-v1.2 file even if
    every other line matches.
+4. **Check the handoff bullet.** A file that sends a finished unit's verification
+   results into the progress file with nowhere else to go is a pre-v1.3 file. Update
+   the bullet and make sure `docs/exec-plans/completed/` exists and is actually
+   populated — the clause is worthless in a repository where no plan ever lands there.
 
 ## Version
+
+**v1.3** — 2026-11-16. Nine sections, 100 lines, 749 words.
+
+Changed from v1.2 (99 lines, 737 words):
+
+- **The handoff bullet names a destination for finished work.** v1.2 required
+  recording what changed and the verification results "in the progress file" and
+  nowhere else, so a long project obeyed it literally: `finlab`'s `PROGRESS.md`
+  reached 874 lines and 97 KB in seventeen days — 45% of it a verification table,
+  38% an active-work chronicle — while `docs/exec-plans/completed/` held a single
+  plan for twelve verified features. v1.1's section-level read guidance made reading
+  the file cheaper without bounding its growth, which bought one week. The rule now
+  splits the two audiences: the progress file keeps the line a fresh session needs,
+  the plan keeps the evidence a reader needs. This is the block's first rule that is
+  only satisfiable if another artifact exists, so the update procedure gains a check
+  for it.
+- **The block is at its 100-line ceiling.** Any further change must trade lines, not
+  add them. That bound is deliberate: Part 2 is boilerplate read in every session,
+  and Part 1's commands are what an agent needs most.
 
 **v1.2** — 2026-11-09. Nine sections, 99 lines, 737 words.
 

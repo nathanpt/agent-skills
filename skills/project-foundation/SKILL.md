@@ -296,14 +296,23 @@ Create `ARCHITECTURE.md` when the project has meaningful structure. It should an
 
 **Do not invent a data/ or storage layer speculatively.** If a project consumes an existing external data system, the architecture records how it is reached and which module owns that boundary — it does not add a local data tier for symmetry. Ask before creating any directory whose purpose is storage, caching, or data access, and record where the storage actually lives (hostname or service, not just a folder name) so a later move does not silently break the project.
 
-Create `PROGRESS.md` when work spans sessions or agents. It should record:
+Create `PROGRESS.md` when work spans sessions or agents. It is a
+**present-state index, not a log**: every line answers "what is true now" or
+"what do I do next", and detail that is finished leaves the file. It records, in
+this order:
 
-- current repository state;
-- confirmed working surfaces;
-- active work;
-- blockers and unknowns;
-- verification status;
-- the next useful move.
+- **Current state** — the dated gates baseline (command and observed result) and
+  one line per verified feature, linked to the exec plan holding its evidence.
+- **Active work** — only work genuinely in flight. Empty is a valid, useful state.
+- **Blockers and unknowns** — live items only; a resolved blocker collapses to one
+  line with a pointer to the ADR or plan that carries the reasoning.
+- **Next useful move** — exactly one concrete step.
+
+Give `PROGRESS.md` no section of its own for decisions, roadmap, or finished
+evidence: those belong in `docs/decisions/`, `docs/feature-list.json`, and
+`docs/exec-plans/completed/`. Target roughly 150 lines. Growth past that means
+completed work is not being moved out, not that the document needs another
+section — and a file that only grows stops being read.
 
 Create `CHANGELOG.md` when the project has meaningful user-visible or release-significant changes. Do not fill it with every internal edit.
 
@@ -327,6 +336,13 @@ docs/
 Create `index.md` files where they make discovery easier. A directory with no current content does not always need an index.
 
 For each generated document, record its generator or command and do not hand-edit generated regions. For each topic document, state when it applies. Keep historical notes out of the entry file unless they remain active constraints.
+
+`docs/exec-plans/completed/` is the permanent home of a finished unit's narrative
+and verification evidence. `PROGRESS.md` links to it and keeps one line per
+verified unit; the plan carries the commands, the observed results, and the
+reasoning. A project whose completed-plans directory is empty while its progress
+file holds the evidence has no destination for finished work, so the progress file
+absorbs it and becomes unreadable.
 
 ### 5. Create the feature contract when justified
 
@@ -458,7 +474,10 @@ Use E2E for cross-boundary features, not as the sole testing layer. Retain the e
 
 ### 9. Establish the first state
 
-Run the project’s real setup and verification commands when safe. Record exact results in `PROGRESS.md`.
+Run the project’s real setup and verification commands when safe. Record the exact
+result once, in the place that owns it: the dated gates baseline in `PROGRESS.md`
+for the current state of the repository, and the unit's exec plan for per-feature
+evidence. Do not paste the same command history into both.
 
 If the user authorized an initial commit, commit the foundation with a descriptive message. Otherwise leave the foundation uncommitted and report that boundary. Never commit or push solely because the skill was invoked.
 
@@ -492,6 +511,10 @@ A foundation is complete only when:
 - the reply-protocol placeholder was replaced with a real form of address, not left as `[your name]`;
 - no data, storage, or cache layer was created without an explicit reason and without recording where the storage actually lives;
 - architecture, progress, decisions, plans, and feature state have distinct homes;
+- `PROGRESS.md` is a present-state index: it holds the dated gates baseline, the work
+  in flight, live blockers, and one next move — every completed unit's narrative and
+  evidence is in `docs/exec-plans/completed/` with one line left behind, and no
+  decision, roadmap, or per-feature evidence history has a section of its own there;
 - every created document has a purpose and is not an empty placeholder;
 - startup and verification commands are known or marked unknown;
 - initial feature status is explicit when a feature list exists;

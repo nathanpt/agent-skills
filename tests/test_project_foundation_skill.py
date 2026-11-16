@@ -320,7 +320,7 @@ class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
 
     def test_marker_carries_version_and_warning(self):
         marker = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->\s*", self.ref).group(0)
-        self.assertIn("v1.2", marker)
+        self.assertIn("v1.3", marker)
         self.assertIn("do not edit in place", marker)
 
     def test_all_nine_sections_present(self):
@@ -504,6 +504,83 @@ class ProjectFoundationInvocationScopeTests(unittest.TestCase):
         ):
             with self.subTest(banned=banned):
                 self.assertNotIn(banned, self.when_to_use)
+
+
+class ProjectFoundationStandardRulesV13Tests(unittest.TestCase):
+    """Guards v1.3: a finished unit's detail has a destination outside the progress file."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1]
+        cls.skill_dir = cls.root / "skills" / "project-foundation"
+        cls.ref = (cls.skill_dir / "references" / "agents-md-general-rules.md").read_text()
+        cls.skill = (cls.skill_dir / "SKILL.md").read_text()
+        cls.retrofit = (cls.skill_dir / "references" / "retrofit-existing-repo.md").read_text()
+        cls.block = re.search(
+            r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->", cls.ref, re.S
+        ).group(1)
+
+    def session_discipline(self):
+        return self.block[self.block.index("### Session discipline"):self.block.index("### Verification errors")]
+
+    def test_handoff_names_the_completed_plan_destination(self):
+        session = self.session_discipline()
+        self.assertIn("a finished unit leaves one line there", " ".join(session.split()))
+        self.assertIn("docs/exec-plans/completed/", session)
+
+    def test_handoff_keeps_the_progress_file_obligation(self):
+        session = " ".join(self.session_discipline().split())
+        self.assertIn("record what changed, the verification results, and what is unfinished", session)
+
+    def test_block_stays_within_its_line_ceiling(self):
+        self.assertLessEqual(
+            len(self.block.splitlines()), 100,
+            "Part 2 is boilerplate in every session; a further rule must trade a line, not add one",
+        )
+
+    def test_skill_defines_progress_md_as_a_present_state_index(self):
+        for phrase in (
+            "present-state index, not a log",
+            "**Active work** — only work genuinely in flight",
+            "**Blockers and unknowns** — live items only",
+            "**Next useful move** — exactly one concrete step",
+            "Target roughly 150 lines",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.skill)
+
+    def test_skill_denies_progress_md_a_decisions_or_roadmap_section(self):
+        flat = " ".join(self.skill.split())
+        self.assertIn(
+            "no section of its own for decisions, roadmap, or finished evidence", flat
+        )
+
+    def test_skill_assigns_completed_plans_the_evidence(self):
+        flat = " ".join(self.skill.split())
+        self.assertIn("permanent home of a finished unit's narrative", flat)
+        self.assertIn("has no destination for finished work", flat)
+
+    def test_completion_criteria_require_the_present_state_shape(self):
+        completion = self.skill.split("## Completion criteria", 1)[1]
+        flat = " ".join(completion.split())
+        self.assertIn("`PROGRESS.md` is a present-state index", flat)
+        self.assertIn("one line left behind", flat)
+
+    def test_update_procedure_checks_for_a_pre_v13_file(self):
+        applying = self.ref[self.ref.index("## Applying an update to an existing project"):]
+        flat = " ".join(applying.split())
+        self.assertIn("pre-v1.3 file", flat)
+        self.assertIn("no plan ever lands there", flat)
+
+    def test_retrofit_names_the_v13_case(self):
+        flat = " ".join(self.retrofit.split())
+        self.assertIn("The v1.3 case is the handoff bullet", flat)
+
+    def test_version_note_records_v13_with_its_evidence(self):
+        tail = self.ref[self.ref.index("## Version"):]
+        self.assertIn("**v1.3**", tail)
+        self.assertIn("874 lines", tail)
+        self.assertIn("at its 100-line ceiling", tail)
 
 
 if __name__ == "__main__":
