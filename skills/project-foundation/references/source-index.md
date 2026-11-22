@@ -27,14 +27,26 @@ This directory contains source material and original synthesis for the draft ski
 - **Relevant sections:** “Core Concepts,” “How to Split,” “Real-World Example,” and “Key Takeaways.”
 - **Candidate principles:** keep `AGENTS.md` as a 50–200 line entry file; put project overview, quick-start commands, a small set of hard constraints, and topic-document links there; make each topic document state when it applies; give instructions a source and expiry condition; move historical lessons into tests or delete them; use progressive disclosure and inspect the repository before creating documentation.
 
+## Walking Labs — dedicated initialization & baseline repair
+
+- **Original:** https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-06-why-initialization-needs-its-own-phase/
+- **Retrieved:** 2026-11-21
+- **Adopted principles:** separate repository initialization from feature work; enforce the **Baseline Repair Rule** at session start (run baseline checks before writing code, and if they fail, repair or report the broken baseline before starting feature work); verify completeness against an explicit disposition matrix rather than skipping artifacts when no code exists yet.
+
+## Walking Labs — overreach, `WIP=1`, and scope drift
+
+- **Original:** https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-07-why-agents-overreach-and-under-finish/
+- **Retrieved:** 2026-11-21
+- **Adopted principles:** constrain work-in-progress to a single bounded feature (`WIP=1`) so reasoning capacity $C$ is not diluted across $k$ concurrent tasks ($C/k$); block new feature activations while the active unit remains unverified ($\text{VCR} = \text{Verified}/\text{Activated} < 1.0$).
+
 ## Walking Labs — feature lists
 
 - **Original:** https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-08-why-feature-lists-are-harness-primitives/
 - **Repository source:** https://github.com/walkinglabs/learn-harness-engineering/blob/main/docs/en/lectures/lecture-08-why-feature-lists-are-harness-primitives/index.md
-- **Retrieved:** 2026-08-29
+- **Retrieved:** 2026-08-29 (updated 2026-11-21)
 - **Local copy:** `walkinglabs-feature-lists.md`
 - **Relevant sections:** “Why Feature Lists Are Different,” “The Feature List as a Harness Primitive,” “How to Write a Good Feature List,” and “Feature Lists and Incremental Development.”
-- **Candidate principles:** externalize project scope into a machine-readable feature list; make each feature independently testable with clear steps and explicit pass/fail state; treat the list as the shared contract for scheduling, verification, and handoffs; prevent agents from declaring the whole project complete after implementing only visible scaffolding; update status from evidence rather than prose.
+- **Candidate principles:** externalize project scope into a machine-readable feature list; make each feature independently testable with clear steps and explicit pass/fail state; treat the list as the shared contract for scheduling, verification, and handoffs; prevent agents from declaring the whole project complete after implementing only visible scaffolding; update status from evidence rather than prose; enforce `passes: true ↔ docs/exec-plans/completed/<id>-*.md` parity with a mechanical test in the repository's unit suite.
 
 ## Walking Labs — end-to-end verification
 
@@ -45,6 +57,18 @@ This directory contains source material and original synthesis for the draft ski
 - **Relevant sections:** “The Blind Spots of Unit Tests,” “End-to-End Testing Not Only Changes Results,” “The Harness Must Include an End-to-End Layer,” “Turn Architectural Rules into Executable Checks,” and “Review Feedback Promotion.”
 - **Candidate principles:** match verification depth to the changed boundary; require integration or end-to-end evidence for cross-component changes; test the real user/system path where possible; turn recurring review findings into executable checks; make failure output state what failed, why, and how to fix it.
 - **Interpretation:** E2E is not a blanket gate for every edit and does not prove the absence of all defects. Unit, integration, and E2E checks are complementary layers.
+
+## Walking Labs — runtime observability inside the harness
+
+- **Original:** https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-11-why-observability-belongs-inside-the-harness/
+- **Retrieved:** 2026-11-21
+- **Adopted principles:** expose structured, machine-parseable runtime logs and quantitative payload invariants to the agent itself so debugging follows `query → correlate → patch smallest layer → rerun check` rather than multi-layer guesswork.
+
+## Walking Labs — clean-state exit, entropy & harness ablation
+
+- **Original:** https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-12-why-every-session-must-leave-a-clean-state/
+- **Retrieved:** 2026-11-21
+- **Adopted principles:** require every session to leave a clean state with completed feature detail moved out of `PROGRESS.md` into `docs/exec-plans/completed/`; enforce the `PROGRESS.md` present-state line ceiling (`<= 200` lines; target ~150) via a mechanical test gate; periodically ablate harness rules against the project's benchmark suite and delete scaffolding that newer models no longer need.
 
 ## MADR — Markdown Architectural Decision Records
 

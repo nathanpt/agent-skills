@@ -283,12 +283,13 @@ class ProjectFoundationRetrofitModeTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, self.retrofit)
 
-    def test_retrofit_reference_labels_itself_unexercised(self):
+    def test_retrofit_reference_records_exercised_status(self):
         self.assertIn(
-            "unexercised",
+            "exercised in service",
             self.retrofit.lower(),
-            "merged material must state that it has not been validated in service",
+            "retrofit mode has been validated across real repositories and must not claim to be unexercised",
         )
+        self.assertNotIn("status: unexercised", self.retrofit.lower())
 
     def test_retired_skill_is_gone(self):
         self.assertFalse(
@@ -581,6 +582,66 @@ class ProjectFoundationStandardRulesV13Tests(unittest.TestCase):
         self.assertIn("**v1.3**", tail)
         self.assertIn("874 lines", tail)
         self.assertIn("at its 100-line ceiling", tail)
+
+
+class ProjectFoundationLearnHarnessEngineeringAuditTests(unittest.TestCase):
+    """Guards the 2026-11-22 Learn Harness Engineering audit fixes."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).parents[1]
+        cls.skill_dir = cls.root / "skills" / "project-foundation"
+        cls.ref = (cls.skill_dir / "references" / "agents-md-general-rules.md").read_text()
+        cls.skill = (cls.skill_dir / "SKILL.md").read_text()
+        cls.retrofit = (cls.skill_dir / "references" / "retrofit-existing-repo.md").read_text()
+        cls.source_index = (cls.skill_dir / "references" / "source-index.md").read_text()
+        cls.block = re.search(
+            r"<!-- BEGIN STANDARD RULES[^>]*-->\n(.*?)<!-- END STANDARD RULES -->", cls.ref, re.S
+        ).group(1)
+
+    def test_skill_requires_mechanical_harness_invariant_check_when_test_suite_exists(self):
+        flat = " ".join(self.skill.split())
+        for phrase in (
+            "mechanical harness-invariant test",
+            "docs/exec-plans/completed/<id>-*.md",
+            "200-line ceiling",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, flat)
+
+    def test_skill_and_retrofit_share_canonical_five_section_progress_shape(self):
+        for section in (
+            "Current state",
+            "Active work",
+            "Blockers and unknowns",
+            "Verification status",
+            "Next useful move",
+        ):
+            with self.subTest(section=section):
+                self.assertIn(section, self.skill)
+                self.assertIn(f"## {section}", self.retrofit)
+        for forbidden in (
+            "## Open tasks and technical debt",
+            "## Decisions, generators, and constraints",
+        ):
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, self.retrofit)
+
+    def test_session_discipline_enforces_baseline_repair_rule_within_100_lines(self):
+        session = self.block[self.block.index("### Session discipline"):self.block.index("### Verification errors")]
+        flat = " ".join(session.split())
+        self.assertIn("repair or report the broken baseline before starting feature work", flat)
+        self.assertEqual(len(self.block.splitlines()), 100)
+
+    def test_source_index_covers_lectures_06_07_11_12(self):
+        for lecture in (
+            "lecture-06-why-initialization-needs-its-own-phase",
+            "lecture-07-why-agents-overreach-and-under-finish",
+            "lecture-11-why-observability-belongs-inside-the-harness",
+            "lecture-12-why-every-session-must-leave-a-clean-state",
+        ):
+            with self.subTest(lecture=lecture):
+                self.assertIn(lecture, self.source_index)
 
 
 if __name__ == "__main__":

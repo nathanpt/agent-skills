@@ -8,9 +8,10 @@ This procedure is the **retrofit half** of project-foundation. Creation mode is 
 `SKILL.md`. The two modes produce the same artifact: a two-part `AGENTS.md` per
 `references/agents-md-general-rules.md`.
 
-**Status: unexercised.** This material was consolidated from a separate skill that was
-never invoked in service. It reads as sound, but it has not yet survived contact with a
-real repository. Treat its rules as hypotheses to be validated, and report what breaks.
+**Status: exercised in service.** This material was consolidated from the retired
+`harness-bootstrap` skill and validated across multi-session repository retrofits
+(v1.1–v1.3). Treat existing repository prose as a hypothesis until verified against
+code and executed checks.
 
 ## The one rule that matters most
 
@@ -170,22 +171,31 @@ values.
 
 ## Step 5 — Progress and feature state
 
-Reconcile the progress document (or the project's `.docs/PROGRESS.md` equivalent) so it
-answers *what is true now, what is active, and what still needs evidence*. Useful shape:
+Reconcile the progress document (or the project's `.docs/PROGRESS.md` equivalent) into the
+present-state index defined in `SKILL.md` so it answers *what is true now, what is active,
+and what still needs evidence* within roughly 150 lines:
 
 ```markdown
-# Project Progress
+# Progress
 
-**Last assessed:** YYYY-MM-DD
-**Repository state:** branch / clean or dirty
+Present-state index. Detail lives in the owning artifact: decisions in
+`docs/decisions/`, roadmap and feature state in `docs/feature-list.json`,
+per-unit narrative and verification evidence in `docs/exec-plans/completed/`.
+This file carries one line per verified surface and links to them.
 
-## Confirmed working surfaces
+## Current state
 ## Active work
-## Open tasks and technical debt
+## Blockers and unknowns
 ## Verification status
-## Decisions, generators, and constraints
-## Next useful checks
+## Next useful move
 ```
+
+Give `PROGRESS.md` no section of its own for decisions, roadmap, or finished evidence:
+move completed feature narratives and verification output to `docs/exec-plans/completed/<id>-*.md`
+and leave one linked line under `## Verification status`. When the repository has a test
+runner and uses `PROGRESS.md` + `docs/exec-plans/completed/` or `docs/feature-list.json`,
+add a mechanical harness-invariant test to the standard unit gate checking completed-plan
+parity and the `PROGRESS.md` line ceiling (<= 200 lines).
 
 Requirements: use checkboxes only for evidence-backed completion or concrete open items;
 source every open item (failed command, missing verification, Git diff, code marker, plan,

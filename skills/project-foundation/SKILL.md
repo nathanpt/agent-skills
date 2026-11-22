@@ -302,10 +302,12 @@ Create `PROGRESS.md` when work spans sessions or agents. It is a
 this order:
 
 - **Current state** — the dated gates baseline (command and observed result) and
-  one line per verified feature, linked to the exec plan holding its evidence.
+  current system status.
 - **Active work** — only work genuinely in flight. Empty is a valid, useful state.
 - **Blockers and unknowns** — live items only; a resolved blocker collapses to one
   line with a pointer to the ADR or plan that carries the reasoning.
+- **Verification status** — one line per verified feature or surface, linked to the
+  exec plan in `docs/exec-plans/completed/` holding its evidence.
 - **Next useful move** — exactly one concrete step.
 
 Give `PROGRESS.md` no section of its own for decisions, roadmap, or finished
@@ -381,8 +383,9 @@ Requirements:
 - New features start as failing or unverified.
 - Agents select one highest-priority incomplete feature at a time.
 - Agents change only status/evidence fields when the project convention requires it; they do not delete or weaken requirements to make the project appear complete.
-- A feature becomes passing only after its listed checks succeed.
+- A feature becomes passing only after its listed checks succeed, with its narrative and verification evidence recorded in `docs/exec-plans/completed/<id>-*.md`.
 - Implicit requirements from prompts, plans, or issue discussions are added to the feature contract or deliberately rejected.
+- When the project has a test suite and uses `PROGRESS.md` + `docs/exec-plans/completed/` or `docs/feature-list.json`, wire a lightweight mechanical harness-invariant test (for example, `tests/unit/test_harness_invariants.py`) into the standard unit-test gate so the test runner fails closed when a passing feature in `docs/feature-list.json` lacks a matching `docs/exec-plans/completed/<id>-*.md` plan or when `PROGRESS.md` exceeds its ~150-line budget (e.g., a 200-line ceiling).
 
 For a tiny project, do not create a feature list just to imitate a larger harness.
 

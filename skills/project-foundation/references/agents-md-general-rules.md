@@ -111,8 +111,8 @@ Record the exact command and the observed result. "Should work" is not evidence.
 - Start by reading `PROGRESS.md` — the active-work, blockers, verification-status,
   and next-move sections, not the whole file — then the recent git log. Reading
   the entire file wastes context; read the sections that decide what to do now.
-- Then run the baseline checks and record any pre-existing failures. Do not begin
-  by writing code.
+- Then run the baseline checks; if they fail, repair or report the broken baseline
+  before starting feature work. Do not begin by writing code.
 - Work on one bounded unit at a time, selected from the feature list when the
   project has one.
 - Only a passing verification moves a feature to done. Never weaken acceptance
