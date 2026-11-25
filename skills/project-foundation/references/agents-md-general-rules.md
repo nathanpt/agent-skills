@@ -49,16 +49,12 @@ silently omitted.
 Everything between the markers is Part 2. Reproduce it byte for byte, marker included.
 
 ```markdown
-<!-- BEGIN STANDARD RULES v1.3 — identical across all projects; do not edit in place -->
+<!-- BEGIN STANDARD RULES v1.4 — identical across all projects; do not edit in place -->
 ### Planning
 
-Before writing code, state the plan abstractly: what the system does, which
-boundaries the change crosses, what data moves and in which direction, and what
-would prove the change works. Do not enumerate implementation steps as a
-substitute for understanding the shape of the problem.
+Before writing code, state the plan abstractly: what the system does, which boundaries the change crosses, what data moves and in which direction, and what would prove the change works. Do not enumerate implementation steps as a substitute for understanding the shape of the problem.
 
-Do not attempt to one-shot a multi-part task; half-finished work left behind is
-worse than unstarted work.
+Do not attempt to one-shot a multi-part task; half-finished work left behind is worse than unstarted work.
 
 ### Testing
 
@@ -73,13 +69,9 @@ Tests exist to catch regressions, not to raise a coverage number.
 
 ### End-to-end verification
 
-Unit tests are systematically blind to component-boundary defects: interface
-mismatches, state propagation, resource lifecycle, and environment differences
-all survive a green unit suite.
+Unit tests are systematically blind to component-boundary defects: interface mismatches, state propagation, resource lifecycle, and environment differences all survive a green unit suite.
 
-Run the checks the project defines for the change: unit, then integration, then
-end-to-end through the real system when the change crosses a component or
-user-visible boundary.
+Run the checks the project defines for the change: unit, then integration, then end-to-end through the real system when the change crosses a component or user-visible boundary.
 
 Record the exact command and the observed result. "Should work" is not evidence.
 
@@ -134,6 +126,14 @@ Record the exact command and the observed result. "Should work" is not evidence.
 Failure reports state what failed, its impact, and either a known fix or the next
 diagnostic step. Label uncertain causes rather than inventing a remedy.
 
+### Technical explanations
+
+Start with the answer in plain English. For hard concepts, explain how the pieces connect, in the order they happen. Use a concrete example or contrast when it helps.
+
+Prefer active voice and one main point per sentence. Define unfamiliar terms once and use them consistently. Keep exact technical terms, identifiers, and conditions. Do not cut a necessary explanation to meet a word limit.
+
+Use headings, bullets, and code blocks when they make the answer easier to scan. Number steps when order matters. When reporting verification, show the exact command and its observed result. Distinguish what was run, what remains unverified, and what you recommend running next.
+
 ### Completion
 
 Never report work as complete, done, passing, or shipped on the strength of code
@@ -159,9 +159,9 @@ Part 2 against the roughly 200-line budget, with hard constraints under 15.
 - `## Part 1 — Project` and `## Part 2 — Standard rules (all projects)` both exist.
 - The marker line matches this file exactly, including the do-not-edit warning.
 - The block is byte-identical to this file — diff it rather than eyeballing it.
-- All nine sections are present: Planning, Testing, End-to-end verification, Invariants
-  and boundaries, Change discipline, Session discipline, Verification errors, Completion,
-  Instruction hygiene.
+- All ten sections are present: Planning, Testing, End-to-end verification, Invariants
+  and boundaries, Change discipline, Session discipline, Verification errors,
+  Technical explanations, Completion, Instruction hygiene.
 - The Completion status footer carries all five fields, including **Docs**.
 - Total length stays near 200 lines and hard constraints under 15 (instruction hygiene).
 - Project-specific commands, boundaries, and constraints are all in Part 1, not scattered
@@ -178,7 +178,8 @@ Part 2 changed, so a project on an older version needs two edits, not one:
    and the two copies will drift. The document-refresh and `CHANGELOG.md` rules are the
    v1.2 case: any project that already states them in Part 1 (as a "keep ARCHITECTURE
    fresh" or "maintain CHANGELOG" hard constraint) deletes those lines rather than
-   carrying both.
+   carrying both. Technical explanations is the v1.4 case: once the new block is in
+   place, remove an equivalent technical-writing rule from Part 1.
 3. **Check the status footer.** A footer missing **Docs** is a pre-v1.2 file even if
    every other line matches.
 4. **Check the handoff bullet.** A file that sends a finished unit's verification
@@ -187,6 +188,12 @@ Part 2 changed, so a project on an older version needs two edits, not one:
    populated — the clause is worthless in a repository where no plan ever lands there.
 
 ## Version
+
+**v1.4** — 2026-11-24. Ten sections, 100 lines.
+
+- **Technical explanations become a shared default.** Lead with the answer, explain how
+  hard concepts work without dropping conditions or exact terms, and separate observed
+  verification results from unverified work and recommended checks. No fixed word limit.
 
 **v1.3** — 2026-11-16. Nine sections, 100 lines, 749 words.
 

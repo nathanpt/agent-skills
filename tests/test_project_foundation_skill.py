@@ -321,17 +321,34 @@ class ProjectFoundationStandardRulesV11Tests(unittest.TestCase):
 
     def test_marker_carries_version_and_warning(self):
         marker = re.search(r"<!-- BEGIN STANDARD RULES[^>]*-->\s*", self.ref).group(0)
-        self.assertIn("v1.3", marker)
+        self.assertIn("v1.4", marker)
         self.assertIn("do not edit in place", marker)
 
-    def test_all_nine_sections_present(self):
+    def test_all_standard_sections_present(self):
         present = re.findall(r"^### (.+)$", self.block, re.M)
         self.assertEqual(
             present,
             ["Planning", "Testing", "End-to-end verification", "Invariants and boundaries",
-             "Change discipline", "Session discipline", "Verification errors", "Completion",
-             "Instruction hygiene"],
+             "Change discipline", "Session discipline", "Verification errors",
+             "Technical explanations", "Completion", "Instruction hygiene"],
         )
+
+    def test_shared_technical_explanations_preserve_mechanism_and_evidence(self):
+        section = re.search(r"^### Technical explanations\n(.*?)^### ", self.block, re.M | re.S)
+        if section is None:
+            self.fail("the rule must be in the copied Part 2 block")
+        flat = " ".join(section.group(1).split())
+        for phrase in (
+            "Start with the answer in plain English",
+            "explain how the pieces connect, in the order they happen",
+            "Keep exact technical terms, identifiers, and conditions",
+            "Do not cut a necessary explanation to meet a word limit",
+            "Use headings, bullets, and code blocks",
+            "show the exact command and its observed result",
+            "Distinguish what was run, what remains unverified, and what you recommend running next",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, flat)
 
     def test_change_discipline_lives_in_part_2_not_part_1(self):
         self.assertIn("### Change discipline", self.block)
@@ -440,8 +457,7 @@ class ProjectFoundationStandardRulesV12Tests(unittest.TestCase):
         self.assertIn("**Docs**", completion)
         self.assertIn("no routed document describes it", completion)
 
-    def test_nine_sections_and_budget_are_unchanged(self):
-        self.assertEqual(len(re.findall(r"^### ", self.block, re.M)), 9)
+    def test_standard_block_stays_within_its_budget(self):
         self.assertLessEqual(len(self.block.splitlines()), 100)
 
     def test_the_skill_still_routes_and_does_not_restate(self):

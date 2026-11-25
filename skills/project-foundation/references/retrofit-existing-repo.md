@@ -232,7 +232,8 @@ carry. The file must end up in the standard shape from
    v1.2 and the Part 1 copy goes. The v1.3 case is the handoff bullet: it now names
    `docs/exec-plans/completed/` as the destination for a finished unit's detail, so a
    retrofit must create and populate that directory rather than leaving the file as the
-   only place evidence can land.
+   only place evidence can land. In v1.4, technical explanations move into Part 2;
+   remove an equivalent Part 1 writing rule once the new block is in place.
 7. If `AGENTS.md` is deliberately gitignored (a public repository that carries no
    agent-facing files), say so in the file itself and record where the local-only
    convention is documented. An untracked file has no history to recover it from.
